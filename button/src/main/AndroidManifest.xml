@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="io.button" >
+
+    <!-- Application Permissions -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.NFC" />
+
+    <!-- Application Features -->
+    <uses-feature android:name="android.hardware.nfc" android:required="true" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:name=".ButtonApplication"
+        android:theme="@style/AppTheme" >
+
+        <!-- Splash Screen Activity -->
+        <activity
+            android:name=".activity.SplashActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppThemeNoActionBar">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Main Activity -->
+        <activity
+            android:name=".activity.ButtonMainActivity">
+
+            <intent-filter>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data
+                        android:scheme="vnd.android.nfc"
+                        android:host="ext"
+                        android:pathPrefix="/io.button:button"/>
+            </intent-filter>
+        </activity>
+
+        <!-- Sign Up or Login Activity -->
+        <activity
+                android:name=".activity.SignUpOrLoginActivity">
+        </activity>
+
+        <!-- Sign Up Activity -->
+        <activity
+                android:name=".activity.SignUpActivity">
+        </activity>
+
+        <!-- Login Activity -->
+        <activity
+                android:name=".activity.LoginActivity">
+        </activity>
+
+    </application>
+
+</manifest>
