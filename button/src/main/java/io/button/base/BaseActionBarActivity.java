@@ -1,5 +1,6 @@
 package io.button.base;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -20,6 +21,12 @@ public class BaseActionBarActivity extends ActionBarActivity {
     protected void onStart() {
         super.onStart();
         Log.d(getClass().getSimpleName(), "onStart");
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        Log.d(getClass().getSimpleName(), "onNewIntent");
     }
 
     @Override

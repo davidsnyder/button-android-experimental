@@ -1,17 +1,16 @@
 package io.button.activity;
 
-import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
+import android.nfc.tech.NfcA;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.widget.TextView;
 
 import butterknife.ButterKnife;
-import com.parse.ParseObject;
 import com.parse.ParseUser;
 
 import javax.inject.Inject;
@@ -20,13 +19,26 @@ import javax.inject.Provider;
 import butterknife.InjectView;
 import io.button.R;
 import io.button.base.BaseActionBarActivity;
+import io.button.dagger.annotation.Button;
 
 public class ButtonMainActivity extends BaseActionBarActivity {
     @Inject
     Provider<ParseUser> currentUser;
 
+    @Inject
+    NfcAdapter nfcAdapter;
+
+    @Inject
+    @Button
+    IntentFilter buttonNdefIntentFilter;
+
     @InjectView(R.id.text_view_user_check)
     TextView userCheckTextView;
+
+    @InjectView(R.id.text_view_button_check)
+    TextView buttonCheckTextView;
+
+    private PendingIntent pendingIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,35 +47,105 @@ public class ButtonMainActivity extends BaseActionBarActivity {
 
         // Inject our views
         ButterKnife.inject(this);
+
+        // Create a generic PendingIntent that will be deliver to this activity. The NFC stack
+        // will fill in the intent with the details of the discovered tag before delivering to
+        // this activity.
+        pendingIntent = PendingIntent.getActivity(this, 0,
+                new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        ParseUser user = currentUser.get();
+
+        // We must check if a user is logged in
+        if (user != null) {
+            if (buttonScanned(intent)) {
+                String buttonId = getButtonId(intent);
+
+                // Notify the user of the button we found
+                buttonCheckTextView.setText("User " + user.getUsername() + " found button " + buttonId + "!");
+            }
+            userCheckTextView.setText("User " + user.getUsername() + " is logged in");
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
+        // Ensure that we intercept any additional button scans
+        enableForegroundDispatch();
+
         // We check our user
         ParseUser user = currentUser.get();
         if (user == null) {
             startActivity(new Intent(this, SignUpOrLoginActivity.class));
         } else {
+            if (buttonScanned(getIntent())) {
+                String buttonId = getButtonId(getIntent());
 
-            Intent intent = getIntent();
-            if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())) {
-                Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-                if (rawMsgs != null) {
-                    NdefMessage msgs[] = new NdefMessage[rawMsgs.length];
-                    for (int i = 0; i < rawMsgs.length; i++) {
-                        msgs[i] = (NdefMessage) rawMsgs[i];
-                    }
-
-                    // Get the button id
-                    String buttonId = new String(msgs[0].getRecords()[0].getPayload());
-
-                    userCheckTextView.setText("User " + user.getUsername() + " found button " + buttonId + "!");
-                }
-            } else {
-                userCheckTextView.setText("User " + user.getUsername() + " is logged in");
+                buttonCheckTextView.setText("User " + user.getUsername() + " found button " + buttonId + "!");
             }
+            userCheckTextView.setText("User " + user.getUsername() + " is logged in");
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        // Disable our foreground dispatch
+        disableForegroundDispatch();
+    }
+
+    /**
+     * Method that tells us whether the activity was created as a result of a scanned button
+     *
+     * @param intent
+     * @return true if intent was from a button scan false if not
+     */
+    private boolean buttonScanned(Intent intent) {
+        // TODO add more stringent check for this intent
+        return NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction());
+    }
+
+    /**
+     * Retrieves a button id from an intent.
+     *
+     * @param intent
+     * @return
+     */
+    private String getButtonId(Intent intent) {
+        Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+        if (rawMsgs != null) {
+            NdefMessage msgs[] = new NdefMessage[rawMsgs.length];
+            for (int i = 0; i < rawMsgs.length; i++) {
+                msgs[i] = (NdefMessage) rawMsgs[i];
+            }
+
+            // Get the button id
+            String buttonId = new String(msgs[0].getRecords()[0].getPayload());
+
+            return buttonId;
+        }
+
+        return "";
+    }
+
+    /**
+     * Utility method to enable foreground dispatch
+     */
+    private void enableForegroundDispatch() {
+        nfcAdapter.enableForegroundDispatch(this, pendingIntent, new IntentFilter[] {buttonNdefIntentFilter}, null);
+    }
+
+    /**
+     * Utility method to disable foreground dispatch
+     */
+    private void disableForegroundDispatch() {
+        nfcAdapter.disableForegroundDispatch(this);
     }
 }

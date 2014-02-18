@@ -8,5 +8,8 @@
     <!-- Parse Defines -->
     <string name="parse_application_id">EaM52knWMXVxdqxvJk2zKGruxEv1eKxFeorP2Vul</string>
     <string name="parse_client_key">jL5CeZGZUoBUtnHRYA4E0YnRoDtbezxX5VgqXqcS</string>
+    <string name="button_data_scheme">vnd.android.nfc</string>
+    <string name="nfc_data_host">ext</string>
+    <string name="button_data_path_prefix">/io.button:button</string>
 
 </resources>

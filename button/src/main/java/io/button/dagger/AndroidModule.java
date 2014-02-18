@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.nfc.NfcAdapter;
 import android.preference.PreferenceManager;
 
 import javax.inject.Singleton;
@@ -52,14 +53,14 @@ public class AndroidModule {
 
     @Provides
     @Singleton
-    AccountManager provideAccountManager(@Application Context context) {
-        return AccountManager.get(context);
+    @Application
+    SharedPreferences provideSharedPreferences() {
+        return PreferenceManager.getDefaultSharedPreferences(appContext);
     }
 
     @Provides
     @Singleton
-    @Application
-    SharedPreferences provideSharedPreferences() {
-        return PreferenceManager.getDefaultSharedPreferences(appContext);
+    NfcAdapter providesNfcAdapter() {
+        return NfcAdapter.getDefaultAdapter(appContext);
     }
 }
