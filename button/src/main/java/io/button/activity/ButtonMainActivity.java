@@ -8,6 +8,7 @@ import android.nfc.NfcAdapter;
 import android.nfc.tech.NfcA;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.util.Log;
 import android.widget.TextView;
 
 import butterknife.ButterKnife;
@@ -122,7 +123,6 @@ public class ButtonMainActivity extends BaseActionBarActivity {
             }
         }
     }
-}
 
     @Override
     public void onPause() {
