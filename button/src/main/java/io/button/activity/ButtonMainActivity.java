@@ -68,10 +68,7 @@ public class ButtonMainActivity extends BaseActionBarActivity {
         // We must check if a user is logged in
         if (user != null) {
             if (buttonScanned(intent)) {
-                String buttonId = getButtonId(intent);
-
-                // Notify the user of the button we found
-                buttonCheckTextView.setText("User " + user.getUsername() + " found button " + buttonId + "!");
+                attemptButtonClaim(getButtonId(intent));
             }
             userCheckTextView.setText("User " + user.getUsername() + " is logged in");
         }
@@ -93,33 +90,7 @@ public class ButtonMainActivity extends BaseActionBarActivity {
 
             // Check to see if this is a button scan
             if (buttonScanned(getIntent())) {
-                String buttonId = getButtonId(getIntent());
-
-                ParseQuery<ParseObject> query = ParseQuery.getQuery("Button");
-                query.include("buttonClaim");
-                query.getInBackground(buttonId, new GetCallback<ParseObject>() {
-                    public void done(ParseObject button, ParseException e) {
-                        if (e == null) {
-                            ParseObject buttonClaim = button.getParseObject("buttonClaim");
-                            if (buttonClaim != null) { // button already has an owner
-                                Log.d(getClass().getSimpleName(), "button already claimed, launching buttonView activity");
-                                Intent intent = new Intent(ButtonMainActivity.this, ButtonViewActivity.class);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                                intent.putExtra("buttonId", button.getObjectId());
-                                startActivity(intent);
-                            } else { // dibs
-                                Log.d(getClass().getSimpleName(), "button is unclaimed, launching claim activity");
-                                Intent intent = new Intent(ButtonMainActivity.this, ButtonClaimActivity.class);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                                intent.putExtra("buttonId", button.getObjectId());
-                                startActivity(intent);
-                            }
-                        } else {
-                            Log.d(getClass().getSimpleName(), "buttonId "+button.getObjectId()+" does not exist in db");
-                            // something went wrong
-                        }
-                    }
-                });
+                attemptButtonClaim(getButtonId(getIntent()));
             }
         }
     }
@@ -130,6 +101,39 @@ public class ButtonMainActivity extends BaseActionBarActivity {
 
         // Disable our foreground dispatch
         disableForegroundDispatch();
+    }
+
+    /**
+     * Attempts to claim a button scanned by the user
+     *
+     * @param buttonId
+     */
+    private void attemptButtonClaim(String buttonId) {
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Button");
+        query.include("buttonClaim");
+        query.getInBackground(buttonId, new GetCallback<ParseObject>() {
+            public void done(ParseObject button, ParseException e) {
+                if (e == null) {
+                    ParseObject buttonClaim = button.getParseObject("buttonClaim");
+                    if (buttonClaim != null) { // button already has an owner
+                        Log.d(getClass().getSimpleName(), "button already claimed, launching buttonView activity");
+                        Intent intent = new Intent(ButtonMainActivity.this, ButtonViewActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.putExtra("buttonId", button.getObjectId());
+                        startActivity(intent);
+                    } else { // dibs
+                        Log.d(getClass().getSimpleName(), "button is unclaimed, launching claim activity");
+                        Intent intent = new Intent(ButtonMainActivity.this, ButtonClaimActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.putExtra("buttonId", button.getObjectId());
+                        startActivity(intent);
+                    }
+                } else {
+                    Log.d(getClass().getSimpleName(), "buttonId "+button.getObjectId()+" does not exist in db");
+                    // something went wrong
+                }
+            }
+        });
     }
 
     /**
