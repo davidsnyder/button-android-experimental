@@ -60,6 +60,16 @@
                 android:name=".activity.LoginActivity">
         </activity>
 
+        <!-- Button Claim Activity -->
+        <activity
+                android:name=".activity.ButtonClaimActivity">
+        </activity>
+
+        <!-- Button View Activity -->
+        <activity
+                android:name=".activity.ButtonViewActivity">
+        </activity>
+
     </application>
 
 </manifest>

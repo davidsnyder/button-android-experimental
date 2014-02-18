@@ -17,6 +17,8 @@ import io.button.activity.SignUpActivity;
 import io.button.activity.SignUpOrLoginActivity;
 import io.button.dagger.annotation.Application;
 import io.button.dagger.annotation.Button;
+import io.button.activity.ButtonClaimActivity;
+import io.button.activity.ButtonViewActivity;
 
 @Module(
         complete = true,
@@ -25,7 +27,9 @@ import io.button.dagger.annotation.Button;
                 ButtonMainActivity.class,
                 SignUpOrLoginActivity.class,
                 SignUpActivity.class,
-                LoginActivity.class
+                LoginActivity.class,
+                ButtonClaimActivity.class,
+                ButtonViewActivity.class,
         },
         includes = {
                 AndroidModule.class
