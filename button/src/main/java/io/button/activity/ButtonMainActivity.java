@@ -12,7 +12,10 @@ import android.widget.TextView;
 
 import butterknife.ButterKnife;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.GetCallback;
+import com.parse.ParseException;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -58,6 +61,33 @@ public class ButtonMainActivity extends BaseActionBarActivity {
 
                     // Get the button id
                     String buttonId = new String(msgs[0].getRecords()[0].getPayload());
+
+                    ParseQuery<ParseObject> query = ParseQuery.getQuery("Button");
+                    query.include("buttonClaim");
+                    query.getInBackground(buttonId, new GetCallback<ParseObject>() {
+                        public void done(ParseObject button, ParseException e) {
+                            if (e == null) {
+                                ParseObject buttonClaim = button.getParseObject("buttonClaim");
+                                if (buttonClaim != null) { // button already has an owner
+                                    Log.d(getClass().getSimpleName(), "button already claimed, launching buttonView activity");
+                                    Intent intent = new Intent(ButtonMainActivity.this, ButtonViewActivity.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    intent.putExtra("buttonId", button.getObjectId());
+                                    startActivity(intent);
+                                } else { // dibs
+                                    Log.d(getClass().getSimpleName(), "button is unclaimed, launching claim activity");
+                                    Intent intent = new Intent(ButtonMainActivity.this, ButtonClaimActivity.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    intent.putExtra("buttonId", button.getObjectId());
+                                    startActivity(intent);
+                                }
+                            } else {
+                                Log.d(getClass().getSimpleName(), "buttonId "+button.getObjectId()+" does not exist in db");
+                                // something went wrong
+
+                            }
+                        }
+                    });
 
                     userCheckTextView.setText("User " + user.getUsername() + " found button " + buttonId + "!");
                 }
