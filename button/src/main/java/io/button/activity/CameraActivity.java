@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.Toast;
 import android.widget.FrameLayout;
+import android.widget.Button;
 import android.content.Context;
 import java.util.List;
 import android.app.ActionBar;
@@ -36,6 +37,7 @@ public class CameraActivity extends Activity {
     private SurfaceView surfaceView;
     private ParseFile photoFile;
     private ImageButton photoButton;
+    private Button exitSnapshotButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -86,7 +88,21 @@ public class CameraActivity extends Activity {
 
                             @Override
                             public void onPictureTaken(byte[] data, Camera camera) {
-                                saveScaledPhoto(data);
+                                photoButton.setEnabled(false);
+                                exitSnapshotButton = (Button) findViewById(R.id.button_exit_photo);
+                                exitSnapshotButton.bringToFront();
+                                exitSnapshotButton.setVisibility(View.VISIBLE);
+                                exitSnapshotButton.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        if (mCamera == null)
+                                            return;
+                                        photoButton.setEnabled(true);
+                                        exitSnapshotButton.setVisibility(View.INVISIBLE);
+                                        mCamera.startPreview();
+                                    }
+                                });
+                                //saveScaledPhoto(data);
                             }
 
                         });
