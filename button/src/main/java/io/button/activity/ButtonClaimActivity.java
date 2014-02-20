@@ -48,6 +48,7 @@ public class ButtonClaimActivity extends BaseActionBarActivity {
         } else {
             Intent intent = getIntent();
             String buttonId = intent.getStringExtra("buttonId");
+            //   TODO: View with form fields for button name, description, and maybe profile photo?
             userCheckTextView.setText("ButtonClaimActivity: User " + user.getUsername() + " can claim button " + buttonId + "!");
         }
     }

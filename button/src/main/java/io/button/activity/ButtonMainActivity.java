@@ -5,26 +5,20 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
-import android.nfc.tech.NfcA;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
 import android.widget.TextView;
-
-import butterknife.ButterKnife;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
-import com.parse.ParseUser;
-import com.parse.GetCallback;
-import com.parse.ParseException;
+import butterknife.InjectView;
+import com.parse.*;
+import io.button.R;
+import io.button.base.BaseActionBarActivity;
+import io.button.dagger.annotation.Button;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 
-import butterknife.InjectView;
-import io.button.R;
-import io.button.base.BaseActionBarActivity;
-import io.button.dagger.annotation.Button;
+import butterknife.ButterKnife;
 
 public class ButtonMainActivity extends BaseActionBarActivity {
     @Inject
@@ -54,7 +48,8 @@ public class ButtonMainActivity extends BaseActionBarActivity {
         ButterKnife.inject(this);
 
         // Create a generic PendingIntent that will be deliver to this activity. The NFC stack
-        // will fill in the intent with the details of the discovered tag before delivering to
+        // will fill in the intent with the details
+        // of the discovered tag before delivering to
         // this activity.
         pendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);

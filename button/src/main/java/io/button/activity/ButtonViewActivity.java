@@ -48,6 +48,8 @@ public class ButtonViewActivity extends BaseActionBarActivity {
         } else {
             Intent intent = getIntent();
             String buttonId = intent.getStringExtra("buttonId");
+          //   TODO: View showing button name, description, owner, number of posts, number of followers, number of bumps?
+           //  button profile photo, button post feed, and Post button
             //    ParseObject buttonOwner = buttonClaim.getParseUser("user");
             userCheckTextView.setText("ButtonViewActivity: User " + user.getUsername() + " is viewing the claimed button " + buttonId + "!");
         }
