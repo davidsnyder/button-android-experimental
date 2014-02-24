@@ -24,6 +24,12 @@ android {
 
 apply plugin: 'android-apt'
 
+repositories {
+    maven {
+        url "https://repo.commonsware.com.s3.amazonaws.com"
+    }
+}
+
 dependencies {
 
     // Android support package
@@ -38,6 +44,8 @@ dependencies {
 
     // Smooth Progress Bar
     compile 'com.github.castorflex.smoothprogressbar:library:0.3.3'
+
+    compile 'com.commonsware.cwac:camera:0.6.2'
 
     compile fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
 }

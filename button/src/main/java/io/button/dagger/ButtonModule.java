@@ -18,23 +18,19 @@ import io.button.activity.SignUpOrLoginActivity;
 import io.button.dagger.annotation.Application;
 import io.button.dagger.annotation.Button;
 import io.button.activity.ButtonClaimActivity;
-import io.button.activity.ButtonViewActivity;
 import io.button.activity.MainActivity;
-import io.button.activity.CameraActivity;
 
 
 @Module(
         complete = true,
         injects = {
                 MainActivity.class,
-                CameraActivity.class,
                 ButtonApplication.class,
                 ButtonMainActivity.class,
                 SignUpOrLoginActivity.class,
                 SignUpActivity.class,
                 LoginActivity.class,
                 ButtonClaimActivity.class,
-                ButtonViewActivity.class,
         },
         includes = {
                 AndroidModule.class
