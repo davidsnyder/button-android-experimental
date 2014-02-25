@@ -26,7 +26,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
-import android.nfc.Tag;
 
 import android.app.ActionBar;
 import android.app.PendingIntent;
@@ -59,7 +58,7 @@ import com.commonsware.cwac.camera.CameraHostProvider;
 import com.commonsware.cwac.camera.SimpleCameraHost;
 
 public class MainActivity extends FragmentActivity implements
-        CameraHostProvider,NfcAdapter.ReaderCallback {
+        CameraHostProvider {
 
     @Inject
     Provider<ParseUser> currentUser;
@@ -175,10 +174,6 @@ public class MainActivity extends FragmentActivity implements
         // Ensure that we intercept any additional button scans
         enableForegroundDispatch();
 
-        //disable stupid ping sound when button is scanned
-        nfcAdapter.enableReaderMode(this, this, NfcAdapter.FLAG_READER_NO_PLATFORM_SOUNDS,
-                null);
-
         // We check our user
         ParseUser user = currentUser.get();
         if (user == null) {
@@ -199,9 +194,6 @@ public class MainActivity extends FragmentActivity implements
 
         // Disable our foreground dispatch
         disableForegroundDispatch();
-
-        //clear NFC flags
-        nfcAdapter.disableReaderMode(this);
     }
 
 
@@ -260,10 +252,6 @@ public class MainActivity extends FragmentActivity implements
      */
     private void disableForegroundDispatch() {
         nfcAdapter.disableForegroundDispatch(this);
-    }
-
-    @Override
-    public void onTagDiscovered(Tag tag) {
     }
 
 }
