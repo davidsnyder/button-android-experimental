@@ -16,6 +16,7 @@
 
 package io.button.activity;
 
+import android.util.Log;
 import io.button.fragment.CameraSectionFragment;
 import io.button.fragment.ButtonsSectionFragment;
 import io.button.fragment.ProfileSectionFragment;
@@ -31,7 +32,6 @@ import android.app.ActionBar;
 import android.app.PendingIntent;
 import android.app.FragmentTransaction;
 import android.app.Activity;
-import android.os.Bundle;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
@@ -79,8 +79,8 @@ public class MainActivity extends FragmentActivity implements
     AppSectionsPagerAdapter collectionPagerAdapter;
     ViewPager mViewPager;
 
-    private static final String sections[] = {"Camera", "Feed", "Buttons", "Button Profile"};
-    private static final int NUM_PAGER_SECTIONS = 4;
+    private static final String sections[] = {"Camera", "Feed", "Buttons"};
+    private static final int NUM_PAGER_SECTIONS = sections.length;
     private static final int NUM_PAGE_FEED = 1;
 
     private PendingIntent pendingIntent;
@@ -130,8 +130,6 @@ public class MainActivity extends FragmentActivity implements
                     return new FeedSectionFragment();
                 case 2:
                     return new ButtonsSectionFragment();
-                case 3:
-                    return new ProfileSectionFragment();
                 default:
                     return new FeedSectionFragment();
             }
@@ -216,19 +214,16 @@ public class MainActivity extends FragmentActivity implements
      */
     private String getButtonId(Intent intent) {
         Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+        String buttonId = "";
         if (rawMsgs != null) {
             NdefMessage msgs[] = new NdefMessage[rawMsgs.length];
             for (int i = 0; i < rawMsgs.length; i++) {
                 msgs[i] = (NdefMessage) rawMsgs[i];
             }
-
             // Get the button id
-            String buttonId = new String(msgs[0].getRecords()[0].getPayload());
-
-            return buttonId;
+            buttonId = new String(msgs[0].getRecords()[0].getPayload());
         }
-
-        return "";
+        return buttonId;
     }
 
     /**
@@ -237,7 +232,7 @@ public class MainActivity extends FragmentActivity implements
      * @param buttonId
      */
     private void attemptButtonClaim(String buttonId) {
-
+        Log.d(getClass().getSimpleName(),buttonId);
     }
 
     /**
