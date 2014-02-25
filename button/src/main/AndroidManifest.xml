@@ -28,14 +28,13 @@
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
         <!-- Main Activity -->
         <activity
-            android:name=".activity.ButtonMainActivity"
+            android:name=".activity.MainActivity"
             android:launchMode="singleTop">
 
             <intent-filter>
@@ -49,39 +48,35 @@
         </activity>
 
         <!-- Sign Up or Login Activity -->
-        <activity
-                android:name=".activity.SignUpOrLoginActivity">
-        </activity>
+        <!--<activity-->
+                <!--android:name=".activity.SignUpOrLoginActivity">-->
+        <!--</activity>-->
 
-        <!-- Sign Up Activity -->
-        <activity
-                android:name=".activity.SignUpActivity">
-        </activity>
+        <!--&lt;!&ndash; Sign Up Activity &ndash;&gt;-->
+        <!--<activity-->
+                <!--android:name=".activity.SignUpActivity">-->
+        <!--</activity>-->
 
-        <!-- Login Activity -->
-        <activity
-                android:name=".activity.LoginActivity">
-        </activity>
+        <!--&lt;!&ndash; Login Activity &ndash;&gt;-->
+        <!--<activity-->
+                <!--android:name=".activity.LoginActivity">-->
+        <!--</activity>-->
 
-        <!-- Button Claim Activity -->
-        <activity
-                android:name=".activity.ButtonClaimActivity">
-        </activity>
+        <!--&lt;!&ndash; Button Claim Activity &ndash;&gt;-->
+        <!--<activity-->
+                <!--android:name=".activity.ButtonClaimActivity">-->
+        <!--</activity>-->
 
-        <!-- Button View Activity -->
-        <activity
-                android:name=".activity.ButtonViewActivity">
-        </activity>
+        <!--&lt;!&ndash; Button View Activity &ndash;&gt;-->
+        <!--<activity-->
+                <!--android:name=".activity.ButtonViewActivity">-->
+        <!--</activity>-->
 
-        <!-- Main Activity -->
-        <activity
-                android:name=".activity.MainActivity">
-        </activity>
+        <!--&lt;!&ndash; Main Activity &ndash;&gt;-->
+        <!--<activity-->
+                <!--android:name=".activity.MainActivity">-->
+        <!--</activity>-->
 
-        <!-- Camera Activity -->
-        <activity android:name=".activity.CameraActivity"
-                  android:screenOrientation="portrait">
-        </activity>
 
     </application>
 

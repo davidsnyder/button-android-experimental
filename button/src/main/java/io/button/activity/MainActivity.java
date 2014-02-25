@@ -20,12 +20,20 @@ import io.button.fragment.CameraSectionFragment;
 import io.button.fragment.ButtonsSectionFragment;
 import io.button.fragment.ProfileSectionFragment;
 import io.button.fragment.FeedSectionFragment;
-
 import io.button.R;
+
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.nfc.NdefMessage;
+import android.nfc.NfcAdapter;
+
 import android.app.ActionBar;
+import android.app.PendingIntent;
 import android.app.FragmentTransaction;
-import android.os.Bundle;
 import android.app.Activity;
+import android.os.Bundle;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -33,10 +41,17 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.TextView;
-import android.content.Intent;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.ImageButton;
+
+import com.parse.*;
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import javax.inject.Inject;
+import javax.inject.Provider;
+import io.button.dagger.annotation.Button;
+import io.button.dagger.Injector;
 
 import com.commonsware.cwac.camera.CameraHost;
 import com.commonsware.cwac.camera.CameraHostProvider;
@@ -45,6 +60,22 @@ import com.commonsware.cwac.camera.SimpleCameraHost;
 public class MainActivity extends FragmentActivity implements
         CameraHostProvider {
 
+    @Inject
+    Provider<ParseUser> currentUser;
+
+    @Inject
+    NfcAdapter nfcAdapter;
+
+    @Inject
+    @Button
+    IntentFilter buttonNdefIntentFilter;
+
+//    @InjectView(R.id.text_view_user_check)
+//    TextView userCheckTextView;
+//
+//    @InjectView(R.id.text_view_button_check)
+//    TextView buttonCheckTextView;
+
     AppSectionsPagerAdapter collectionPagerAdapter;
     ViewPager mViewPager;
 
@@ -52,9 +83,16 @@ public class MainActivity extends FragmentActivity implements
     private static final int NUM_PAGER_SECTIONS = 4;
     private static final int NUM_PAGE_FEED = 1;
 
+    private PendingIntent pendingIntent;
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Injector.inject(this, getApplicationContext());
+
+        // Inject our views
+        ButterKnife.inject(this);
 
         getActionBar().hide();
 
@@ -63,6 +101,13 @@ public class MainActivity extends FragmentActivity implements
         mViewPager.setAdapter(collectionPagerAdapter);
         mViewPager.setCurrentItem(NUM_PAGE_FEED);
         mViewPager.setOffscreenPageLimit(NUM_PAGER_SECTIONS);
+
+        // Create a generic PendingIntent that will be deliver to this activity. The NFC stack
+        // will fill in the intent with the details
+        // of the discovered tag before delivering to
+        // this activity.
+        pendingIntent = PendingIntent.getActivity(this, 0,
+                new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
     }
 
 
@@ -106,6 +151,107 @@ public class MainActivity extends FragmentActivity implements
     @Override
     public CameraHost getCameraHost() {
         return(new SimpleCameraHost(this));
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        ParseUser user = currentUser.get();
+
+        // We must check if a user is logged in
+        if (user != null) {
+            if (buttonScanned(intent)) {
+                attemptButtonClaim(getButtonId(intent));
+            }
+          //  userCheckTextView.setText("User " + user.getUsername() + " is logged in");
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Ensure that we intercept any additional button scans
+        enableForegroundDispatch();
+
+        // We check our user
+        ParseUser user = currentUser.get();
+        if (user == null) {
+         //   startActivity(new Intent(this, SignUpOrLoginActivity.class));
+        } else {
+           // userCheckTextView.setText("User " + user.getUsername() + " is logged in");
+
+            // Check to see if this is a button scan
+            if (buttonScanned(getIntent())) {
+                attemptButtonClaim(getButtonId(getIntent()));
+            }
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        // Disable our foreground dispatch
+        disableForegroundDispatch();
+    }
+
+
+    /**
+     * Method that tells us whether the activity was created as a result of a scanned button
+     *
+     * @param intent
+     * @return true if intent was from a button scan false if not
+     */
+    private boolean buttonScanned(Intent intent) {
+        // TODO add more stringent check for this intent
+        return NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction());
+    }
+
+    /**
+     * Retrieves a button id from an intent.
+     *
+     * @param intent
+     * @return
+     */
+    private String getButtonId(Intent intent) {
+        Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+        if (rawMsgs != null) {
+            NdefMessage msgs[] = new NdefMessage[rawMsgs.length];
+            for (int i = 0; i < rawMsgs.length; i++) {
+                msgs[i] = (NdefMessage) rawMsgs[i];
+            }
+
+            // Get the button id
+            String buttonId = new String(msgs[0].getRecords()[0].getPayload());
+
+            return buttonId;
+        }
+
+        return "";
+    }
+
+    /**
+     * Attempts to claim a button scanned by the user
+     *
+     * @param buttonId
+     */
+    private void attemptButtonClaim(String buttonId) {
+
+    }
+
+    /**
+     * Utility method to enable foreground dispatch
+     */
+    private void enableForegroundDispatch() {
+        nfcAdapter.enableForegroundDispatch(this, pendingIntent, new IntentFilter[] {buttonNdefIntentFilter}, null);
+    }
+
+    /**
+     * Utility method to disable foreground dispatch
+     */
+    private void disableForegroundDispatch() {
+        nfcAdapter.disableForegroundDispatch(this);
     }
 
 }

@@ -11,13 +11,13 @@ import dagger.Module;
 import dagger.Provides;
 import io.button.ButtonApplication;
 import io.button.R;
-import io.button.activity.ButtonMainActivity;
-import io.button.activity.LoginActivity;
-import io.button.activity.SignUpActivity;
-import io.button.activity.SignUpOrLoginActivity;
+//import io.button.activity.ButtonMainActivity;
+//import io.button.activity.LoginActivity;
+//import io.button.activity.SignUpActivity;
+//import io.button.activity.SignUpOrLoginActivity;
 import io.button.dagger.annotation.Application;
 import io.button.dagger.annotation.Button;
-import io.button.activity.ButtonClaimActivity;
+//import io.button.activity.ButtonClaimActivity;
 import io.button.activity.MainActivity;
 
 
@@ -26,11 +26,11 @@ import io.button.activity.MainActivity;
         injects = {
                 MainActivity.class,
                 ButtonApplication.class,
-                ButtonMainActivity.class,
-                SignUpOrLoginActivity.class,
-                SignUpActivity.class,
-                LoginActivity.class,
-                ButtonClaimActivity.class,
+              //  ButtonMainActivity.class,
+            //    SignUpOrLoginActivity.class,
+           //     SignUpActivity.class,
+           //     LoginActivity.class,
+            //    ButtonClaimActivity.class,
         },
         includes = {
                 AndroidModule.class
