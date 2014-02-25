@@ -19,17 +19,63 @@ import android.view.LayoutInflater;
 import android.view.View;
 import io.button.R;
 import android.view.ViewGroup;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.ListFragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
+import android.support.v4.app.FragmentTransaction;
 import android.widget.TextView;
+import android.widget.ListView;
+import android.widget.ArrayAdapter;
 
-public class ButtonsSectionFragment extends Fragment {
+import java.lang.CharSequence;
+import java.lang.Override;
+
+public class ButtonsSectionFragment extends ListFragment {
+
+    final static CharSequence EMPTY_BUTTON_LIST_TEXT = "Scan buttons and they will show up here";
 
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+
         View rootView = inflater.inflate(
-                R.layout.fragment_collection_object, container, false);
-        ((TextView) rootView.findViewById(R.id.text1)).setText("Buttons");
+                R.layout.button_list, container, false);
+
         return rootView;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        String[] values = new String[] {"1","2","3","4","5"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+                android.R.layout.simple_list_item_1, values);   //TODO: Replace with R.layout.button_list_row
+        setListAdapter(adapter);
+
+        //Some bug prevents this from working
+        //https://code.google.com/p/android/issues/detail?id=21742
+        //setEmptyText(EMPTY_BUTTON_LIST_TEXT);
+
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        // do something with the data
+
+        ProfileSectionFragment fragment = new ProfileSectionFragment();
+
+        Bundle mBundle = new Bundle();
+        mBundle.putInt("arg", position); //TODO: stick buttonId in here
+        fragment.setArguments(mBundle);
+
+        final FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        fragmentTransaction.replace(R.id.detail_container, fragment);
+
+        fragmentTransaction.addToBackStack(null);
+
+        fragmentTransaction.commit();
     }
 }

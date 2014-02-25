@@ -239,14 +239,18 @@ public class MainActivity extends FragmentActivity implements
      * Utility method to enable foreground dispatch
      */
     private void enableForegroundDispatch() {
-        nfcAdapter.enableForegroundDispatch(this, pendingIntent, new IntentFilter[] {buttonNdefIntentFilter}, null);
+        if (nfcAdapter != null && nfcAdapter.isEnabled()) {
+            nfcAdapter.enableForegroundDispatch(this, pendingIntent, new IntentFilter[] {buttonNdefIntentFilter}, null);
+        }
     }
 
     /**
      * Utility method to disable foreground dispatch
      */
     private void disableForegroundDispatch() {
-        nfcAdapter.disableForegroundDispatch(this);
+        if (nfcAdapter != null && nfcAdapter.isEnabled()) {
+            nfcAdapter.disableForegroundDispatch(this);
+        }
     }
 
 }

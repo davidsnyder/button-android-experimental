@@ -15,12 +15,12 @@
 package io.button.fragment;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
-import io.button.R;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.support.v4.app.Fragment;
+import io.button.R;
 
 public class ProfileSectionFragment extends Fragment {
 
@@ -30,6 +30,10 @@ public class ProfileSectionFragment extends Fragment {
         View rootView = inflater.inflate(
                 R.layout.fragment_collection_object, container, false);
         ((TextView) rootView.findViewById(R.id.text1)).setText("Profile");
+        // + Integer.toString(savedInstanceState.getInt("arg"))
+
+         //rootView.setVisibility(View.VISIBLE);
+
         return rootView;
     }
 }
