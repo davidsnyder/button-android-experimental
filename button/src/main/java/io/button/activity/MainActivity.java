@@ -261,13 +261,17 @@ public class MainActivity extends FragmentActivity implements
         fragment.setArguments(mBundle);
 
         final FragmentManager fragmentManager = this.getSupportFragmentManager();
-        final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        fragmentTransaction.add(R.id.container, fragment);
-        if(addToBackStack) {
-            fragmentTransaction.addToBackStack(null);
+        if(fragmentManager.findFragmentByTag(buttonId) != null) {
+            //the profile fragment corresponding to this buttonId is already in the foreground, do not transition
+        } else {
+            final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.add(R.id.container, fragment, buttonId);
+            if(addToBackStack) {
+                fragmentTransaction.addToBackStack(null);
+            }
+            fragmentTransaction.commit();
         }
-        fragmentTransaction.commit();
     }
 
 }
