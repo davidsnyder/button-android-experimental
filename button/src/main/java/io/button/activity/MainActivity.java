@@ -82,7 +82,7 @@ public class MainActivity extends FragmentActivity implements CameraHostProvider
 
     private static final String sections[] = {"Camera", "Feed", "Buttons"};
     private static final int NUM_PAGER_SECTIONS = sections.length;
-    private static final int NUM_PAGE_FEED = 1;
+    private static final int NUM_DEFAULT_PAGE = 1;
 
     private PendingIntent pendingIntent;
 
@@ -101,10 +101,11 @@ public class MainActivity extends FragmentActivity implements CameraHostProvider
             onButtonProfileSelected(getButtonId(intent), false);
         }
 
-        collectionPagerAdapter= new AppSectionsPagerAdapter(getSupportFragmentManager());
+        final FragmentManager fragmentManager = this.getSupportFragmentManager();
+        collectionPagerAdapter= new AppSectionsPagerAdapter(fragmentManager);
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(collectionPagerAdapter);
-        mViewPager.setCurrentItem(NUM_PAGE_FEED);
+        mViewPager.setCurrentItem(NUM_DEFAULT_PAGE);
         mViewPager.setOffscreenPageLimit(NUM_PAGER_SECTIONS);
 
         // Create a generic PendingIntent that will be delivered to this activity.
@@ -310,7 +311,7 @@ public class MainActivity extends FragmentActivity implements CameraHostProvider
             final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.add(R.id.container, fragment, buttonId);
             if(addToBackStack) {
-                fragmentTransaction.addToBackStack(buttonId);
+                fragmentTransaction.addToBackStack(null);
             }
             fragmentTransaction.commit();
         }
