@@ -281,9 +281,7 @@ public class MainActivity extends FragmentActivity implements CameraHostProvider
     public void onPhotoTaken(byte[] image) {
         CameraPreviewFragment fragment = new CameraPreviewFragment();
 
-        Bundle mBundle = new Bundle();
-        mBundle.putByteArray("image",  image);
-        fragment.setArguments(mBundle);
+        CameraPreviewFragment.imageToShow = image;
 
         final FragmentManager fragmentManager = this.getSupportFragmentManager();
         final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

@@ -28,7 +28,7 @@ import io.button.R;
 
 public class CameraPreviewFragment extends Fragment {
 
-    static byte[] imageToShow = null;
+    public static byte[] imageToShow = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -37,8 +37,6 @@ public class CameraPreviewFragment extends Fragment {
 
         View rootView = inflater.inflate(
                 R.layout.camera_preview, container, false);
-
-        imageToShow = getArguments().getByteArray("image");
 
         if(imageToShow != null) {
             BitmapFactory.Options opts=new BitmapFactory.Options();
