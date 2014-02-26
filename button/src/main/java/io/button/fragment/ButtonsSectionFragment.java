@@ -14,25 +14,44 @@
 
 package io.button.fragment;
 
+import io.button.R;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import io.button.R;
 import android.view.ViewGroup;
-import android.support.v4.app.ListFragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
-import android.support.v4.app.FragmentTransaction;
+import android.app.Activity;
 import android.widget.TextView;
 import android.widget.ListView;
 import android.widget.ArrayAdapter;
+import android.support.v4.app.ListFragment;
 
 import java.lang.CharSequence;
 import java.lang.Override;
 
 public class ButtonsSectionFragment extends ListFragment {
 
-    final static CharSequence EMPTY_BUTTON_LIST_TEXT = "Scan buttons and they will show up here";
+    final static CharSequence EMPTY_BUTTON_LIST_TEXT = "When you scan buttons they will show up here";
+
+    OnButtonSelectedListener mCallback;
+
+    public interface OnButtonSelectedListener {
+        public void onButtonProfileSelected(int position);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        // This makes sure that the container activity has implemented
+        // the callback interface. If not, it throws an exception
+        try {
+            mCallback = (OnButtonSelectedListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnButtonSelectedListener");
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -61,21 +80,6 @@ public class ButtonsSectionFragment extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        // do something with the data
-
-        ProfileSectionFragment fragment = new ProfileSectionFragment();
-
-        Bundle mBundle = new Bundle();
-        mBundle.putInt("arg", position); //TODO: stick buttonId in here
-        fragment.setArguments(mBundle);
-
-        final FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-        fragmentTransaction.replace(R.id.detail_container, fragment);
-
-        fragmentTransaction.addToBackStack(null);
-
-        fragmentTransaction.commit();
+        mCallback.onButtonProfileSelected(position);
     }
 }

@@ -31,7 +31,7 @@ public class ProfileSectionFragment extends Fragment {
         View rootView = inflater.inflate(
                 R.layout.button_detail, container, false);
 
-        ((TextView) rootView.findViewById(R.id.buttonId)).setText(Integer.toString(getArguments().getInt("arg")+1));
+        ((TextView) rootView.findViewById(R.id.buttonId)).setText(Integer.toString(getArguments().getInt("buttonId")+1));
 
          //rootView.setVisibility(View.VISIBLE);
 

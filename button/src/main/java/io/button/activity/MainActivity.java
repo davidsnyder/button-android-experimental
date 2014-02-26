@@ -30,7 +30,6 @@ import android.nfc.NfcAdapter;
 
 import android.app.ActionBar;
 import android.app.PendingIntent;
-import android.app.FragmentTransaction;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -38,6 +37,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,7 +59,7 @@ import com.commonsware.cwac.camera.CameraHostProvider;
 import com.commonsware.cwac.camera.SimpleCameraHost;
 
 public class MainActivity extends FragmentActivity implements
-        CameraHostProvider {
+        CameraHostProvider,ButtonsSectionFragment.OnButtonSelectedListener {
 
     @Inject
     Provider<ParseUser> currentUser;
@@ -251,6 +252,21 @@ public class MainActivity extends FragmentActivity implements
         if (nfcAdapter != null && nfcAdapter.isEnabled()) {
             nfcAdapter.disableForegroundDispatch(this);
         }
+    }
+
+    public void onButtonProfileSelected(int position) {
+        ProfileSectionFragment fragment = new ProfileSectionFragment();
+
+        Bundle mBundle = new Bundle();
+        mBundle.putInt("buttonId", position); //TODO: stick buttonId in here
+        fragment.setArguments(mBundle);
+
+        final FragmentManager fragmentManager = this.getSupportFragmentManager();
+        final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        fragmentTransaction.add(R.id.container, fragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 
 }

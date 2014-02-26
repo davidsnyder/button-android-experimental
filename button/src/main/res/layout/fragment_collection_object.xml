@@ -15,8 +15,7 @@
   -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/profile">
+                android:layout_height="match_parent">
     <TextView xmlns:android="http://schemas.android.com/apk/res/android"
               android:id="@+id/text1"
               android:layout_width="match_parent"
@@ -25,4 +24,3 @@
               android:textSize="128sp"
               android:padding="32dp" />
 </RelativeLayout>
-
