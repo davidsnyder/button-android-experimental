@@ -16,6 +16,7 @@ package io.button.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,9 +29,9 @@ public class ProfileSectionFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(
-                R.layout.fragment_collection_object, container, false);
-        ((TextView) rootView.findViewById(R.id.text1)).setText("Profile");
-        // + Integer.toString(savedInstanceState.getInt("arg"))
+                R.layout.button_detail, container, false);
+
+        ((TextView) rootView.findViewById(R.id.buttonId)).setText(Integer.toString(getArguments().getInt("arg")+1));
 
          //rootView.setVisibility(View.VISIBLE);
 
