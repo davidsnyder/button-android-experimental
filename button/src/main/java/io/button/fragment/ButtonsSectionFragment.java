@@ -36,7 +36,7 @@ public class ButtonsSectionFragment extends ListFragment {
     OnButtonSelectedListener mCallback;
 
     public interface OnButtonSelectedListener {
-        public void onButtonProfileSelected(int position);
+        public void onButtonProfileSelected(String buttonId, boolean addToBackStack);
     }
 
     @Override
@@ -69,7 +69,7 @@ public class ButtonsSectionFragment extends ListFragment {
 
         String[] values = new String[] {"1","2","3","4","5"};
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_list_item_1, values);   //TODO: Replace with R.layout.button_list_row
+                android.R.layout.simple_list_item_1, android.R.id.text1, values);   //TODO: Replace with R.layout.button_list_row
         setListAdapter(adapter);
 
         //Some bug prevents this from working
@@ -80,6 +80,7 @@ public class ButtonsSectionFragment extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        mCallback.onButtonProfileSelected(position);
+        String buttonId = ((TextView) v.findViewById(android.R.id.text1)).getText().toString();
+        mCallback.onButtonProfileSelected(buttonId, true);
     }
 }

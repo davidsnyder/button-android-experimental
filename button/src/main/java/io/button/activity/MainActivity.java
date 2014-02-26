@@ -71,12 +71,6 @@ public class MainActivity extends FragmentActivity implements
     @Button
     IntentFilter buttonNdefIntentFilter;
 
-//    @InjectView(R.id.text_view_user_check)
-//    TextView userCheckTextView;
-//
-//    @InjectView(R.id.text_view_button_check)
-//    TextView buttonCheckTextView;
-
     AppSectionsPagerAdapter collectionPagerAdapter;
     ViewPager mViewPager;
 
@@ -91,11 +85,15 @@ public class MainActivity extends FragmentActivity implements
         setContentView(R.layout.activity_main);
 
         Injector.inject(this, getApplicationContext());
-
-        // Inject our views
         ButterKnife.inject(this);
 
         getActionBar().hide();
+
+        Intent intent = getIntent();
+        // We were started via a button scan; do not pass go and proceed directly to button profile
+        if (buttonScanned(intent)) {
+            onButtonProfileSelected(getButtonId(intent), false);
+        }
 
         collectionPagerAdapter= new AppSectionsPagerAdapter(getSupportFragmentManager());
         mViewPager = (ViewPager) findViewById(R.id.pager);
@@ -103,14 +101,12 @@ public class MainActivity extends FragmentActivity implements
         mViewPager.setCurrentItem(NUM_PAGE_FEED);
         mViewPager.setOffscreenPageLimit(NUM_PAGER_SECTIONS);
 
-        // Create a generic PendingIntent that will be deliver to this activity. The NFC stack
-        // will fill in the intent with the details
-        // of the discovered tag before delivering to
-        // this activity.
+        // Create a generic PendingIntent that will be delivered to this activity.
+        // The NFC stack will fill in the intent with the details
+        // of the discovered tag before delivering to this activity.
         pendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
     }
-
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to one of the primary
@@ -153,13 +149,18 @@ public class MainActivity extends FragmentActivity implements
     }
 
     @Override
+    // Intents that arrive while the app is already opened will come through here
+    // If the app is not opened, the intent will proceed through MainActivity.onCreate
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+
         ParseUser user = currentUser.get();
 
         // We must check if a user is logged in
         if (user != null) {
             if (buttonScanned(intent)) {
+                //TODO: if there's already a fragment of this button up, don't do anything
+                onButtonProfileSelected(getButtonId(intent), true);
                 attemptButtonClaim(getButtonId(intent));
             }
           //  userCheckTextView.setText("User " + user.getUsername() + " is logged in");
@@ -190,11 +191,9 @@ public class MainActivity extends FragmentActivity implements
     @Override
     public void onPause() {
         super.onPause();
-
         // Disable our foreground dispatch
         disableForegroundDispatch();
     }
-
 
     /**
      * Method that tells us whether the activity was created as a result of a scanned button
@@ -233,7 +232,7 @@ public class MainActivity extends FragmentActivity implements
      * @param buttonId
      */
     private void attemptButtonClaim(String buttonId) {
-        Log.d(getClass().getSimpleName(),buttonId);
+        Log.d(getClass().getSimpleName(), buttonId);
     }
 
     /**
@@ -254,18 +253,20 @@ public class MainActivity extends FragmentActivity implements
         }
     }
 
-    public void onButtonProfileSelected(int position) {
+    public void onButtonProfileSelected(String buttonId, boolean addToBackStack) {
         ProfileSectionFragment fragment = new ProfileSectionFragment();
 
         Bundle mBundle = new Bundle();
-        mBundle.putInt("buttonId", position); //TODO: stick buttonId in here
+        mBundle.putString("buttonId", buttonId);
         fragment.setArguments(mBundle);
 
         final FragmentManager fragmentManager = this.getSupportFragmentManager();
         final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         fragmentTransaction.add(R.id.container, fragment);
-        fragmentTransaction.addToBackStack(null);
+        if(addToBackStack) {
+            fragmentTransaction.addToBackStack(null);
+        }
         fragmentTransaction.commit();
     }
 
