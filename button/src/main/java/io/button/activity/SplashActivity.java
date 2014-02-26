@@ -9,7 +9,7 @@ import android.os.Bundle;
 import io.button.R;
 
 public class SplashActivity extends Activity {
-    private final int SPLASH_DURATION = 3000;
+    private final int SPLASH_DURATION = 1000;
 
     /** Called when the activity is first created. */
     @Override

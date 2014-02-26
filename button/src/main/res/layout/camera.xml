@@ -7,13 +7,11 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
-
     <Button
-            android:id="@+id/button_exit_photo"
+            android:id="@+id/button_take_photo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:text="Discard"/>
+            android:layout_alignParentBottom="true"
+            android:text="Take Photo"/>
 
 </RelativeLayout>

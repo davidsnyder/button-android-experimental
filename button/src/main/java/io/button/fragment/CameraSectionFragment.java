@@ -17,22 +17,45 @@ package io.button.fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import io.button.R;
 import android.view.ViewGroup;
+import android.support.v4.app.FragmentActivity;
 import io.button.fragment.CameraFragment;
 import com.commonsware.cwac.camera.CameraView;
+import com.commonsware.cwac.camera.PictureTransaction;
+import io.button.activity.MainActivity;
+import com.commonsware.cwac.camera.CameraHost;
 
 public class CameraSectionFragment extends CameraFragment {
+
+    private CameraHost cameraHost = null;
+    private CameraView cameraView = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
-        View content=inflater.inflate(R.layout.camera, container, false);
-        CameraView cameraView=(CameraView)content.findViewById(R.id.camera);
+        View content = inflater.inflate(R.layout.camera, container, false);
+        cameraView = (CameraView)content.findViewById(R.id.camera);
 
         setCameraView(cameraView);
 
+        FragmentActivity parentActivity = getActivity();
+        if(parentActivity instanceof MainActivity) {
+           // setHost(((MainActivity) parentActivity).getCameraHost());
+            cameraHost = ((MainActivity) parentActivity).getCameraHost();
+        }
+
+        final Button button = (Button) content.findViewById(R.id.button_take_photo);
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                PictureTransaction xact = new PictureTransaction(cameraHost);
+                takePicture(xact);
+            }
+        });
+
         return(content);
     }
+
 }

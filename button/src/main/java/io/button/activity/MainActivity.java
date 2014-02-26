@@ -18,6 +18,7 @@ package io.button.activity;
 
 import android.util.Log;
 import io.button.fragment.CameraSectionFragment;
+import io.button.fragment.CameraPreviewFragment;
 import io.button.fragment.ButtonsSectionFragment;
 import io.button.fragment.ProfileSectionFragment;
 import io.button.fragment.FeedSectionFragment;
@@ -27,7 +28,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
+import android.content.Context;
 
+import android.hardware.Camera;
 import android.app.ActionBar;
 import android.app.PendingIntent;
 import android.app.Activity;
@@ -57,9 +60,12 @@ import io.button.dagger.Injector;
 import com.commonsware.cwac.camera.CameraHost;
 import com.commonsware.cwac.camera.CameraHostProvider;
 import com.commonsware.cwac.camera.SimpleCameraHost;
+import com.commonsware.cwac.camera.PictureTransaction;
 
-public class MainActivity extends FragmentActivity implements
-        CameraHostProvider,ButtonsSectionFragment.OnButtonSelectedListener {
+import java.lang.Override;
+
+public class MainActivity extends FragmentActivity implements CameraHostProvider,
+        ButtonsSectionFragment.OnButtonSelectedListener {
 
     @Inject
     Provider<ParseUser> currentUser;
@@ -145,7 +151,27 @@ public class MainActivity extends FragmentActivity implements
 
     @Override
     public CameraHost getCameraHost() {
-        return(new SimpleCameraHost(this));
+        return(new MyCameraHost(this));
+    }
+
+    class MyCameraHost extends SimpleCameraHost {
+
+        public MyCameraHost(Context _context) {
+            super(_context);
+        }
+
+        // Not really saving; we're only forwarding on to the
+        // CameraPreviewFragment which will handle saving if the user commits
+        @Override
+        public void saveImage(PictureTransaction xact, byte[] image) {
+            onPhotoTaken(image);
+        }
+
+        @Override
+        public Camera.Parameters adjustPreviewParameters(Camera.Parameters parameters) {
+            parameters.setRotation(90);
+            return parameters;
+        }
     }
 
     @Override
@@ -174,16 +200,15 @@ public class MainActivity extends FragmentActivity implements
         // Ensure that we intercept any additional button scans
         enableForegroundDispatch();
 
+        Intent intent = getIntent();
         // We check our user
         ParseUser user = currentUser.get();
         if (user == null) {
          //   startActivity(new Intent(this, SignUpOrLoginActivity.class));
         } else {
-           // userCheckTextView.setText("User " + user.getUsername() + " is logged in");
-
             // Check to see if this is a button scan
-            if (buttonScanned(getIntent())) {
-                attemptButtonClaim(getButtonId(getIntent()));
+            if (buttonScanned(intent)) {
+                attemptButtonClaim(getButtonId(intent));
             }
         }
     }
@@ -191,7 +216,6 @@ public class MainActivity extends FragmentActivity implements
     @Override
     public void onPause() {
         super.onPause();
-        // Disable our foreground dispatch
         disableForegroundDispatch();
     }
 
@@ -253,6 +277,24 @@ public class MainActivity extends FragmentActivity implements
         }
     }
 
+    public void onPhotoTaken(byte[] image) {
+        CameraPreviewFragment fragment = new CameraPreviewFragment();
+
+        Bundle mBundle = new Bundle();
+        mBundle.putByteArray("image",  image);
+        fragment.setArguments(mBundle);
+
+        final FragmentManager fragmentManager = this.getSupportFragmentManager();
+        final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        fragmentTransaction.add(R.id.container, fragment, "cameraPreview");
+        fragmentTransaction.addToBackStack("cameraPreview");
+        fragmentTransaction.commit();
+    }
+
+    /**
+     * Event callback for ButtonsSectionFragment.OnButtonSelectedListener
+     */
     public void onButtonProfileSelected(String buttonId, boolean addToBackStack) {
         ProfileSectionFragment fragment = new ProfileSectionFragment();
 
@@ -268,7 +310,7 @@ public class MainActivity extends FragmentActivity implements
             final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.add(R.id.container, fragment, buttonId);
             if(addToBackStack) {
-                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.addToBackStack(buttonId);
             }
             fragmentTransaction.commit();
         }
