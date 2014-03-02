@@ -24,11 +24,6 @@ android {
 
 apply plugin: 'android-apt'
 
-repositories {
-    maven {
-    }
-}
-
 dependencies {
 
     // Android support package
