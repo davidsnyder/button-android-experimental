@@ -16,27 +16,29 @@
 
 package io.button.activity;
 
-import android.util.Log;
+
+import io.button.R;
 import io.button.fragment.ButtonsSectionFragment;
 import io.button.fragment.NewPostFragment;
 import io.button.fragment.ProfileSectionFragment;
 import io.button.fragment.FeedSectionFragment;
-import io.button.R;
-import android.widget.Toast;
-import android.provider.MediaStore;
+
+import java.util.Date;
 import android.net.Uri;
 import java.io.File;
-import java.util.Date;
-import android.os.Environment;
 import java.text.SimpleDateFormat;
+
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.util.Log;
 
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.nfc.NdefMessage;
-import android.nfc.NfcAdapter;
 import android.content.Context;
 
-import android.hardware.Camera;
+import android.nfc.NdefMessage;
+import android.nfc.NfcAdapter;
+
 import android.app.ActionBar;
 import android.app.PendingIntent;
 import android.app.Activity;
@@ -46,9 +48,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,12 +64,10 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import io.button.dagger.annotation.Button;
 import io.button.dagger.Injector;
-
 import java.lang.Override;
 
-public class MainActivity extends FragmentActivity
-        implements ButtonsSectionFragment.OnButtonSelectedListener,
-        ProfileSectionFragment.OpenCameraListener {
+public class MainActivity extends FragmentActivity implements ButtonsSectionFragment.OnButtonSelectedListener,
+        ProfileSectionFragment.NewPostListener {
 
     @Inject
     Provider<ParseUser> currentUser;
@@ -278,10 +278,9 @@ public class MainActivity extends FragmentActivity
     }
 
     /**
-     * Event callback for ProfileSectionFragment.onPhotoButtonSelected
-     * Open new CameraSectionFragment
+     * Event callback for ProfileSectionFragment.onNewPostSelected
      */
-    public void onPhotoButtonSelected(String buttonId, boolean addToBackStack) {
+    public void onNewPostSelected(String buttonId, boolean addToBackStack) {
 
         // create Intent to take a picture and return control to the calling application
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);

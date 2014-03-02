@@ -29,8 +29,8 @@ public class ProfileSectionFragment extends Fragment {
 
     OpenCameraListener mCallback;
 
-    public interface OpenCameraListener {
-        public void onPhotoButtonSelected(String buttonId, boolean addToBackStack);
+    public interface NewPostListener {
+        public void onNewPostSelected(String buttonId, boolean addToBackStack);
     }
 
     private Button photoButton;
@@ -48,7 +48,7 @@ public class ProfileSectionFragment extends Fragment {
         photoButton = (Button) rootView.findViewById(R.id.button_goto_camera);
         photoButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                mCallback.onPhotoButtonSelected(buttonId, true);
+                mCallback.onNewPostSelected(buttonId, true);
             }
         });
 
@@ -62,10 +62,10 @@ public class ProfileSectionFragment extends Fragment {
         // This makes sure that the container activity has implemented
         // the callback interface. If not, it throws an exception
         try {
-            mCallback = (OpenCameraListener) activity;
+            mCallback = (NewPostListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement OpenCameraListener");
+                    + " must implement NewPostListener");
         }
     }
 
