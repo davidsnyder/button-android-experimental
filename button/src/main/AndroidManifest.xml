@@ -63,22 +63,6 @@
                 <!--android:name=".activity.LoginActivity">-->
         <!--</activity>-->
 
-        <!--&lt;!&ndash; Button Claim Activity &ndash;&gt;-->
-        <!--<activity-->
-                <!--android:name=".activity.ButtonClaimActivity">-->
-        <!--</activity>-->
-
-        <!--&lt;!&ndash; Button View Activity &ndash;&gt;-->
-        <!--<activity-->
-                <!--android:name=".activity.ButtonViewActivity">-->
-        <!--</activity>-->
-
-        <!--&lt;!&ndash; Main Activity &ndash;&gt;-->
-        <!--<activity-->
-                <!--android:name=".activity.MainActivity">-->
-        <!--</activity>-->
-
-
     </application>
 
 </manifest>
