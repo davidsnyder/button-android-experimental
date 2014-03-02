@@ -27,7 +27,7 @@ import android.widget.Button;
 
 public class ProfileSectionFragment extends Fragment {
 
-    OpenCameraListener mCallback;
+    NewPostListener mCallback;
 
     public interface NewPostListener {
         public void onNewPostSelected(String buttonId, boolean addToBackStack);
