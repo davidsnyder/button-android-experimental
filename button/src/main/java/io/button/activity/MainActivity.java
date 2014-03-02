@@ -131,7 +131,6 @@ public class MainActivity extends FragmentActivity implements ButtonsSectionFrag
 
         });
 
-
         // Create a generic PendingIntent that will be delivered to this activity.
         // The NFC stack will fill in the intent with the details
         // of the discovered tag before delivering to this activity.
