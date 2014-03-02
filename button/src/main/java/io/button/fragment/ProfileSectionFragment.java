@@ -19,11 +19,22 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.app.Activity;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import io.button.R;
+import android.widget.Button;
 
 public class ProfileSectionFragment extends Fragment {
+
+    OpenCameraListener mCallback;
+
+    public interface OpenCameraListener {
+        public void onPhotoButtonSelected(String buttonId, boolean addToBackStack);
+    }
+
+    private Button photoButton;
+    private String buttonId;
 
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -31,8 +42,32 @@ public class ProfileSectionFragment extends Fragment {
         View rootView = inflater.inflate(
                 R.layout.button_detail, container, false);
 
-        ((TextView) rootView.findViewById(R.id.buttonId)).setText(getArguments().getString("buttonId"));
+        buttonId = getArguments().getString("buttonId");
+        ((TextView) rootView.findViewById(R.id.buttonId)).setText(buttonId);
+
+        photoButton = (Button) rootView.findViewById(R.id.button_goto_camera);
+        photoButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                mCallback.onPhotoButtonSelected(buttonId, true);
+            }
+        });
 
         return rootView;
     }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        // This makes sure that the container activity has implemented
+        // the callback interface. If not, it throws an exception
+        try {
+            mCallback = (OpenCameraListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OpenCameraListener");
+        }
+    }
+
+
 }
