@@ -40,7 +40,7 @@ public class ProfileSectionFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(
-                R.layout.button_detail, container, false);
+                R.layout.fragment_button_profile, container, false);
 
         buttonId = getArguments().getString("buttonId");
         ((TextView) rootView.findViewById(R.id.buttonId)).setText(buttonId);

@@ -28,7 +28,7 @@ public class FeedSectionFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(
-                R.layout.fragment_collection_object, container, false);
+                R.layout.fragment_feed, container, false);
         ((TextView) rootView.findViewById(R.id.text1)).setText("Feed");
         return rootView;
     }

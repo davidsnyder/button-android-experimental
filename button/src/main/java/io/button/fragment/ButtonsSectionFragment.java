@@ -58,7 +58,7 @@ public class ButtonsSectionFragment extends ListFragment {
                              ViewGroup container, Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(
-                R.layout.button_list, container, false);
+                R.layout.fragment_button_list, container, false);
 
         return rootView;
     }

@@ -34,7 +34,7 @@ public class NewPostFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(
-                R.layout.fragment_collection_object, container, false);
+                R.layout.fragment_new_post, container, false);
 
         Uri imageUri = Uri.parse(getArguments().getString("fileUri"));
         String buttonId = getArguments().getString("buttonId");
