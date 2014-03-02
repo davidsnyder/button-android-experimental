@@ -61,7 +61,8 @@ import io.button.dagger.annotation.Button;
 import io.button.dagger.Injector;
 import java.lang.Override;
 
-public class MainActivity extends FragmentActivity implements ButtonsSectionFragment.OnButtonSelectedListener,
+public class MainActivity extends FragmentActivity implements
+        ButtonsSectionFragment.OnButtonSelectedListener,
         ProfileSectionFragment.NewPostListener {
 
     @Inject
@@ -322,7 +323,6 @@ public class MainActivity extends FragmentActivity implements ButtonsSectionFrag
             nfcAdapter.disableForegroundDispatch(this);
         }
     }
-
 
     private void openNewPostFragment(String buttonId, Uri fileUri) {
         NewPostFragment fragment = new NewPostFragment();
