@@ -16,19 +16,14 @@
 
 package io.button.activity;
 
-
 import io.button.R;
 import io.button.fragment.ButtonsSectionFragment;
 import io.button.fragment.NewPostFragment;
 import io.button.fragment.ProfileSectionFragment;
 import io.button.fragment.FeedSectionFragment;
+import io.button.util.MediaUtils;
 
-import java.util.Date;
 import android.net.Uri;
-import java.io.File;
-import java.text.SimpleDateFormat;
-
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 
@@ -78,16 +73,13 @@ public class MainActivity extends FragmentActivity implements ButtonsSectionFrag
     @Inject
     @Button
     IntentFilter buttonNdefIntentFilter;
-
     AppSectionsPagerAdapter collectionPagerAdapter;
     ViewPager mViewPager;
-    private int previousState, currentState;
 
-    private static final String sections[] = {"Camera", "Feed", "Buttons"};
+    private static final String sections[] = {"UserProfile", "Feed", "Buttons"};
     private static final int NUM_PAGER_SECTIONS = sections.length;
     private static final int NUM_DEFAULT_PAGE = 1;
 
-    private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
     private Uri fileUri;
     // FIXME: The intent passed to onActivityResult is null so there's no way to pass this information back to the activity from the camera
     private String _buttonId;
@@ -173,9 +165,51 @@ public class MainActivity extends FragmentActivity implements ButtonsSectionFrag
         }
     }
 
+    /**
+     * Event callback for ProfileSectionFragment.onNewPostSelected
+     */
+    public void onNewPostSelected(String buttonId, boolean addToBackStack) {
+
+        // create Intent to take a picture and return control to the calling application
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        fileUri = MediaUtils.getOutputMediaFileUri(MediaUtils.MEDIA_TYPE_IMAGE); // create a file to save the image
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
+        _buttonId = buttonId;
+        // start the image capture Intent
+        startActivityForResult(intent, MediaUtils.CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+    }
+
+    /**
+     * Event callback for ButtonsSectionFragment.OnButtonSelectedListener
+     */
+    public void onButtonProfileSelected(String buttonId, boolean addToBackStack) {
+        ProfileSectionFragment fragment = new ProfileSectionFragment();
+
+        Bundle mBundle = new Bundle();
+        mBundle.putString("buttonId", buttonId);
+        fragment.setArguments(mBundle);
+
+        final FragmentManager fragmentManager = this.getSupportFragmentManager();
+
+        if(fragmentManager.findFragmentByTag(buttonId) != null) {
+            //the profile fragment corresponding to this buttonId is already on the fragment stack; bring to front
+            fragmentManager.popBackStack(buttonId, 0);
+        } else {
+            final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.add(R.id.container, fragment, buttonId);
+            if(addToBackStack) {
+                fragmentTransaction.addToBackStack(null);
+            }
+            fragmentTransaction.commit();
+        }
+    }
+
+    /**
+     *  Intents that arrive while the app is already opened will come through here
+     *  If the app is not opened, the intent will proceed through MainActivity.onCreate
+     */
     @Override
-    // Intents that arrive while the app is already opened will come through here
-    // If the app is not opened, the intent will proceed through MainActivity.onCreate
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
@@ -213,9 +247,22 @@ public class MainActivity extends FragmentActivity implements ButtonsSectionFrag
     }
 
     @Override
-    public void onPause() {
+    protected void onPause() {
         super.onPause();
         disableForegroundDispatch();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == MediaUtils.CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                openNewPostFragment(_buttonId, fileUri);
+            } else if (resultCode == RESULT_CANCELED) {
+                // User cancelled the image capture
+            } else {
+                // Image capture failed, advise user
+            }
+        }
     }
 
     /**
@@ -276,33 +323,6 @@ public class MainActivity extends FragmentActivity implements ButtonsSectionFrag
         }
     }
 
-    /**
-     * Event callback for ProfileSectionFragment.onNewPostSelected
-     */
-    public void onNewPostSelected(String buttonId, boolean addToBackStack) {
-
-        // create Intent to take a picture and return control to the calling application
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-        fileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE); // create a file to save the image
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
-        _buttonId = buttonId;
-        // start the image capture Intent
-        startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                openNewPostFragment(_buttonId, fileUri);
-            } else if (resultCode == RESULT_CANCELED) {
-                // User cancelled the image capture
-            } else {
-                // Image capture failed, advise user
-            }
-        }
-    }
 
     private void openNewPostFragment(String buttonId, Uri fileUri) {
         NewPostFragment fragment = new NewPostFragment();
@@ -318,73 +338,6 @@ public class MainActivity extends FragmentActivity implements ButtonsSectionFrag
         fragmentTransaction.add(R.id.container, fragment, buttonId);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commitAllowingStateLoss();
-    }
-
-    public static final int MEDIA_TYPE_IMAGE = 1;
-    public static final int MEDIA_TYPE_VIDEO = 2;
-
-    /** Create a file Uri for saving an image or video */
-    private static Uri getOutputMediaFileUri(int type) {
-        return Uri.fromFile(getOutputMediaFile(type));
-    }
-
-    /** Create a File for saving an image or video */
-    private static File getOutputMediaFile(int type) {
-        // To be safe, you should check that the SDCard is mounted
-        // using Environment.getExternalStorageState() before doing this.
-
-        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "Button");
-        // This location works best if you want the created images to be shared
-        // between applications and persist after your app has been uninstalled.
-
-        // Create the storage directory if it does not exist
-        if (! mediaStorageDir.exists()) {
-            if (! mediaStorageDir.mkdirs()) {
-                Log.d("Button", "failed to create directory");
-                return null;
-            }
-        }
-
-        // Create a media file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        File mediaFile;
-        if (type == MEDIA_TYPE_IMAGE) {
-            mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                    "IMG_"+ timeStamp + ".jpg");
-        } else if(type == MEDIA_TYPE_VIDEO) {
-            mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                    "VID_"+ timeStamp + ".mp4");
-        } else {
-            return null;
-        }
-
-        return mediaFile;
-    }
-
-    /**
-     * Event callback for ButtonsSectionFragment.OnButtonSelectedListener
-     */
-    public void onButtonProfileSelected(String buttonId, boolean addToBackStack) {
-        ProfileSectionFragment fragment = new ProfileSectionFragment();
-
-        Bundle mBundle = new Bundle();
-        mBundle.putString("buttonId", buttonId);
-        fragment.setArguments(mBundle);
-
-        final FragmentManager fragmentManager = this.getSupportFragmentManager();
-
-        if(fragmentManager.findFragmentByTag(buttonId) != null) {
-            //the profile fragment corresponding to this buttonId is already on the fragment stack; bring to front
-            fragmentManager.popBackStack(buttonId, 0);
-        } else {
-            final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.add(R.id.container, fragment, buttonId);
-            if(addToBackStack) {
-                fragmentTransaction.addToBackStack(null);
-            }
-            fragmentTransaction.commit();
-        }
     }
 
 }
