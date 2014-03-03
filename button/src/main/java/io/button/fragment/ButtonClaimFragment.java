@@ -49,6 +49,8 @@ public class ButtonClaimFragment extends Fragment {
             public void onClick(View v) {
                 ParseQuery<io.button.models.Button> query = ParseQuery.getQuery(io.button.models.Button.class);
                 query.include("buttonClaim.user");
+                // FIXME: things like getParseObject("buttonClaim") won't work unless the object is included here.
+                // maybe encapsulate these queries in the Button class
                 query.getInBackground(buttonId, new GetCallback<io.button.models.Button>() {
                     public void done(io.button.models.Button button, ParseException e) {
                         if (e == null) {

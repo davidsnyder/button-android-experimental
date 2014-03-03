@@ -29,6 +29,9 @@ import android.widget.TextView;
 import android.widget.ImageView;
 import android.widget.Button;
 import io.button.R;
+import java.io.File;
+import java.io.IOException;
+import io.button.models.Post;
 
 import com.parse.*;
 
@@ -37,6 +40,9 @@ public class NewPostFragment extends Fragment {
     private Button submitButton;
     private String buttonId;
     private Uri imageUri;
+    private Post post;
+
+    private ParseFile photoFile;
 
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -67,23 +73,38 @@ public class NewPostFragment extends Fragment {
     private void submitPost(Uri imageUri) {
         Log.d(getClass().getSimpleName(), "submitPost");
 
-//        1. save photo
-//        2. new Post()
-//        3. attach photo, owner, text
-//        4. save in background
+        try {
+            File file = new File(imageUri.getPath());
+            byte[] imageData = org.apache.commons.io.FileUtils.readFileToByteArray(file);
 
-//        ParseFile photoFile = new ParseFile("meal_photo.jpg", scaledData);
-//        photoFile.saveInBackground(new SaveCallback() {
-//
-//            public void done(ParseException e) {
-//                if (e != null) {
-//                    Toast.makeText(getActivity(),
-//                            "Error saving: " + e.getMessage(),
-//                            Toast.LENGTH_LONG).show();
-//                } else {
-//                    addPhotoToMealAndReturn(photoFile);
-//                }
-//            }
+            photoFile = new ParseFile(imageUri.getLastPathSegment(), imageData);
+            photoFile.saveInBackground(new SaveCallback() {
+
+                public void done(ParseException e) {
+                    if (e != null) {
+                        Log.d("NewPostFragment parsefile save", e.getMessage());
+                    } else {
+                        post = new Post();
+                        post.setPhotoFile(photoFile);
+                        post.saveInBackground(new SaveCallback() {
+
+                            @Override
+                            public void done(ParseException e) {
+                                if (e == null) {
+
+                                } else {
+                                    Log.d("NewPostFragment post save", e.getMessage());
+                                }
+                            }
+
+                        });
+                    }
+                }
+            });
+        } catch (IOException e) {
+
+        }
+
     }
 
 }
