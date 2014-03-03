@@ -20,15 +20,23 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.ImageView;
+import android.widget.Button;
 import io.button.R;
 
+import com.parse.*;
+
 public class NewPostFragment extends Fragment {
+
+    private Button submitButton;
+    private String buttonId;
+    private Uri imageUri;
 
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -36,12 +44,46 @@ public class NewPostFragment extends Fragment {
         View rootView = inflater.inflate(
                 R.layout.fragment_new_post, container, false);
 
-        Uri imageUri = Uri.parse(getArguments().getString("fileUri"));
-        String buttonId = getArguments().getString("buttonId");
+        imageUri = Uri.parse(getArguments().getString("fileUri"));
+        buttonId = getArguments().getString("buttonId");
 
         ((TextView) rootView.findViewById(R.id.text2)).setText(buttonId);
         ((ImageView) rootView.findViewById(R.id.post_image)).setImageURI(imageUri);
+
+        submitButton = (Button) rootView.findViewById(R.id.button_submit_post);
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                submitPost(imageUri);
+
+                // Return to button profile
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                fm.popBackStack("newPost", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            }
+        });
+
         return rootView;
+    }
+
+    private void submitPost(Uri imageUri) {
+        Log.d(getClass().getSimpleName(), "submitPost");
+
+//        1. save photo
+//        2. new Post()
+//        3. attach photo, owner, text
+//        4. save in background
+
+//        ParseFile photoFile = new ParseFile("meal_photo.jpg", scaledData);
+//        photoFile.saveInBackground(new SaveCallback() {
+//
+//            public void done(ParseException e) {
+//                if (e != null) {
+//                    Toast.makeText(getActivity(),
+//                            "Error saving: " + e.getMessage(),
+//                            Toast.LENGTH_LONG).show();
+//                } else {
+//                    addPhotoToMealAndReturn(photoFile);
+//                }
+//            }
     }
 
 }

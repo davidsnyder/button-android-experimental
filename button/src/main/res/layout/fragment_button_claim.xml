@@ -18,42 +18,17 @@
                 android:layout_height="match_parent"
                 android:background="@color/white">
 
-    <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
-               android:id="@+id/post_image"
-               android:layout_width="match_parent"
-               android:layout_height="match_parent" />
-
     <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-              android:id="@+id/text1"
+              android:id="@+id/buttonId"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:gravity="center"
-              android:textSize="50sp"
+              android:textSize="75sp"
               android:padding="32dp" />
-
-    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-              android:id="@+id/text2"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:textColor="#FFFFFF"
-              android:gravity="center"
-              android:textSize="50sp"
-              android:padding="32dp" />
-
-    <EditText
-            android:id="@+id/edit_text_post_content"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:hint="Comment"
-            android:inputType="text"
-            android:maxLines="3"/>
 
     <Button
-            android:id="@+id/button_submit_post"
+            android:id="@+id/button_claim_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:text="Submit"/>
-
+            android:text="Claim Button"/>
 </RelativeLayout>

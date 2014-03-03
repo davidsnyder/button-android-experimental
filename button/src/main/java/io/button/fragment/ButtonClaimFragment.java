@@ -15,43 +15,53 @@
 package io.button.fragment;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.app.Activity;
+import io.button.R;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import io.button.R;
+import android.support.v4.app.Fragment;
 import android.widget.Button;
+import android.app.Activity;
+import io.button.fragment.ButtonsSectionFragment;
 
-public class ProfileSectionFragment extends Fragment {
+import com.parse.*;
 
-    NewPostListener mCallback;
+public class ButtonClaimFragment extends Fragment {
 
-    public interface NewPostListener {
-        public void onNewPostSelected(String buttonId);
-    }
+    //TODO: These interfaces should be pulled out
+    ButtonsSectionFragment.OnButtonSelectedListener mCallback;
 
-    private Button photoButton;
+    private Button claimButton;
     private String buttonId;
 
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(
-                R.layout.fragment_button_profile, container, false);
+                R.layout.fragment_button_claim, container, false);
 
         buttonId = getArguments().getString("buttonId");
         ((TextView) rootView.findViewById(R.id.buttonId)).setText(buttonId);
 
-        photoButton = (Button) rootView.findViewById(R.id.button_goto_camera);
-        photoButton.setOnClickListener(new View.OnClickListener() {
+        claimButton = (Button) rootView.findViewById(R.id.button_claim_button);
+        claimButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                mCallback.onNewPostSelected(buttonId);
+                ParseQuery<io.button.models.Button> query = ParseQuery.getQuery(io.button.models.Button.class);
+                query.include("buttonClaim.user");
+                query.getInBackground(buttonId, new GetCallback<io.button.models.Button>() {
+                    public void done(io.button.models.Button button, ParseException e) {
+                        if (e == null) {
+                            button.setOwner(ParseUser.getCurrentUser());
+                            button.saveInBackground();
+
+                            mCallback.onButtonProfileSelected(buttonId, false);
+                        }
+                    }
+                });
+
             }
         });
-
         return rootView;
     }
 
@@ -62,12 +72,10 @@ public class ProfileSectionFragment extends Fragment {
         // This makes sure that the container activity has implemented
         // the callback interface. If not, it throws an exception
         try {
-            mCallback = (NewPostListener) activity;
+            mCallback = (ButtonsSectionFragment.OnButtonSelectedListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement NewPostListener");
+                    + " must implement OnButtonSelectedListener");
         }
     }
-
-
 }

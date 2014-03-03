@@ -16,8 +16,11 @@
 
 package io.button.activity;
 
+import io.button.models.*;
+
 import io.button.R;
 import io.button.fragment.ButtonsSectionFragment;
+import io.button.fragment.ButtonClaimFragment;
 import io.button.fragment.NewPostFragment;
 import io.button.fragment.ProfileSectionFragment;
 import io.button.fragment.FeedSectionFragment;
@@ -96,12 +99,13 @@ public class MainActivity extends FragmentActivity implements
 
         getActionBar().hide();
 
+        //If the app launches via a button scan the intent will be caught here
         Intent intent = getIntent();
-        // We were started via a button scan; do not pass go and proceed directly to button profile
         if (buttonScanned(intent)) {
-            onButtonProfileSelected(getButtonId(intent), false);
+            handleButtonScan(intent);
         }
 
+        // Set up SwipePager
         final FragmentManager fragmentManager = this.getSupportFragmentManager();
         collectionPagerAdapter= new AppSectionsPagerAdapter(fragmentManager);
         mViewPager = (ViewPager) findViewById(R.id.pager);
@@ -124,9 +128,9 @@ public class MainActivity extends FragmentActivity implements
 
         });
 
-        // Create a generic PendingIntent that will be delivered to this activity.
-        // The NFC stack will fill in the intent with the details
-        // of the discovered tag before delivering to this activity.
+        // Create a pending intent to capture any future NFC scans that
+        // take place while the app is already in the foreground.
+        // A scan intent will call MainActivity.onNewIntent()
         pendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
     }
@@ -169,7 +173,7 @@ public class MainActivity extends FragmentActivity implements
     /**
      * Event callback for ProfileSectionFragment.onNewPostSelected
      */
-    public void onNewPostSelected(String buttonId, boolean addToBackStack) {
+    public void onNewPostSelected(String buttonId) {
 
         // create Intent to take a picture and return control to the calling application
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -199,8 +203,8 @@ public class MainActivity extends FragmentActivity implements
         } else {
             final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.add(R.id.container, fragment, buttonId);
-            if(addToBackStack) {
-                fragmentTransaction.addToBackStack(null);
+            if (addToBackStack) {
+                fragmentTransaction.addToBackStack(buttonId);
             }
             fragmentTransaction.commit();
         }
@@ -215,15 +219,10 @@ public class MainActivity extends FragmentActivity implements
         super.onNewIntent(intent);
 
         ParseUser user = currentUser.get();
-
-        // We must check if a user is logged in
         if (user != null) {
             if (buttonScanned(intent)) {
-                //TODO: if there's already a fragment of this button up, don't do anything
-                onButtonProfileSelected(getButtonId(intent), true);
-                attemptButtonClaim(getButtonId(intent));
+                handleButtonScan(intent);
             }
-          //  userCheckTextView.setText("User " + user.getUsername() + " is logged in");
         }
     }
 
@@ -242,7 +241,7 @@ public class MainActivity extends FragmentActivity implements
         } else {
             // Check to see if this is a button scan
             if (buttonScanned(intent)) {
-                attemptButtonClaim(getButtonId(intent));
+               // buttonClaim(getButtonId(intent));
             }
         }
     }
@@ -277,6 +276,29 @@ public class MainActivity extends FragmentActivity implements
         return NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction());
     }
 
+    private void handleButtonScan(Intent intent) {
+
+        String buttonId = getButtonId(intent);
+        ParseQuery<io.button.models.Button> query = ParseQuery.getQuery(io.button.models.Button.class);
+        query.include("buttonClaim.user");
+        query.getInBackground(buttonId, new GetCallback<io.button.models.Button>() {
+            public void done(io.button.models.Button button, ParseException e) {
+                if (e == null) {
+                    button.wasScanned();
+                    button.saveInBackground();
+
+                    if(button.hasOwner()) {
+                        onButtonProfileSelected(button.getObjectId(), false);
+                    } else {
+                        openButtonClaimFragment(button.getObjectId());
+                    }
+
+                }
+            }
+        });
+
+    }
+
     /**
      * Retrieves a button id from an intent.
      *
@@ -295,15 +317,6 @@ public class MainActivity extends FragmentActivity implements
             buttonId = new String(msgs[0].getRecords()[0].getPayload());
         }
         return buttonId;
-    }
-
-    /**
-     * Attempts to claim a button scanned by the user
-     *
-     * @param buttonId
-     */
-    private void attemptButtonClaim(String buttonId) {
-        Log.d(getClass().getSimpleName(), buttonId);
     }
 
     /**
@@ -335,9 +348,28 @@ public class MainActivity extends FragmentActivity implements
         final FragmentManager fragmentManager = this.getSupportFragmentManager();
 
         final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add(R.id.container, fragment, buttonId);
-        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.add(R.id.container, fragment, "newPost");
+        fragmentTransaction.addToBackStack("newPost");
         fragmentTransaction.commitAllowingStateLoss();
+    }
+
+    private void openButtonClaimFragment(String buttonId) {
+        ButtonClaimFragment fragment = new ButtonClaimFragment();
+
+        Bundle mBundle = new Bundle();
+        mBundle.putString("buttonId", buttonId);
+        fragment.setArguments(mBundle);
+        String fragmentTag = "buttonClaim_" + buttonId;
+        final FragmentManager fragmentManager = this.getSupportFragmentManager();
+        if(fragmentManager.findFragmentByTag(fragmentTag) != null) {
+            //the profile fragment corresponding to this buttonId is already on the fragment stack; bring to front
+            fragmentManager.popBackStack(fragmentTag, 0);
+        } else {
+            final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.add(R.id.container, fragment, fragmentTag);
+            fragmentTransaction.addToBackStack(fragmentTag);
+            fragmentTransaction.commitAllowingStateLoss();
+        }
     }
 
 }

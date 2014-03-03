@@ -3,6 +3,9 @@ package io.button;
 import android.app.Application;
 
 import com.parse.Parse;
+import com.parse.ParseObject;
+import com.parse.ParseACL;
+import io.button.models.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,6 +26,16 @@ public class ButtonApplication extends Application implements InjectableApplicat
 
         // We initialize our application with Parse
         Parse.initialize(this, parseApplicationId, parseClientKey);
+
+        // Register Parse subclasses
+        ParseObject.registerSubclass(io.button.models.Button.class);
+        ParseObject.registerSubclass(io.button.models.Post.class);
+
+        // FIXME: Restrict write/read access
+        ParseACL defaultACL = new ParseACL();
+        defaultACL.setPublicReadAccess(true);
+        defaultACL.setPublicWriteAccess(true);
+        ParseACL.setDefaultACL(defaultACL, true);
 
         // Initalize our object graph for Dagger
         initDependencyInjection();
