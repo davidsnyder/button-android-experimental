@@ -43,6 +43,7 @@ public class ProfileSectionFragment extends Fragment {
 
     private Button photoButton;
     private String buttonId;
+    private boolean fromScan;
 
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -54,12 +55,15 @@ public class ProfileSectionFragment extends Fragment {
         buttonId = getArguments().getString("buttonId");
         ((TextView) rootView.findViewById(R.id.buttonId)).setText(buttonId);
 
-        photoButton = (Button) rootView.findViewById(R.id.button_goto_camera);
-        photoButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                mCallback.onNewPostSelected(buttonId);
-            }
-        });
+        fromScan = getArguments().getBoolean("fromScan");
+        if (fromScan) {
+            photoButton = (Button) rootView.findViewById(R.id.button_goto_camera);
+            photoButton.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    mCallback.onNewPostSelected(buttonId);
+                }
+            });
+        }
 
         ListView buttonPostList = ((ListView) rootView.findViewById(android.R.id.list));
 

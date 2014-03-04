@@ -30,6 +30,8 @@ public class ButtonApplication extends Application implements InjectableApplicat
         // Register Parse subclasses
         ParseObject.registerSubclass(io.button.models.Button.class);
         ParseObject.registerSubclass(io.button.models.Post.class);
+        ParseObject.registerSubclass(io.button.models.Follow.class);
+        ParseObject.registerSubclass(io.button.models.Scan.class);
 
         // FIXME: Restrict write/read access
         ParseACL defaultACL = new ParseACL();

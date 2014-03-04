@@ -37,7 +37,9 @@ public class Button extends ParseObject {
         ParseObject buttonClaim = getParseObject("buttonClaim");
         if (buttonClaim != null) {
             return buttonClaim.getParseUser("user");
-        } else { return null; }
+        } else {
+            return null;
+        }
     }
 
     public void setOwner(ParseUser user) {
@@ -58,10 +60,6 @@ public class Button extends ParseObject {
 
     public void setPhotoFile(ParseFile file) {
         put("image", file);
-    }
-
-    public void wasScanned() {
-        //create a new Bump/Scan
     }
 
 }

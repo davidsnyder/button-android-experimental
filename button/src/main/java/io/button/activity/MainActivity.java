@@ -188,11 +188,12 @@ public class MainActivity extends FragmentActivity implements
     /**
      * Event callback for ButtonsSectionFragment.OnButtonSelectedListener
      */
-    public void onButtonProfileSelected(String buttonId, boolean addToBackStack) {
+    public void onButtonProfileSelected(String buttonId, boolean addToBackStack, boolean fromScan) {
         ProfileSectionFragment fragment = new ProfileSectionFragment();
 
         Bundle mBundle = new Bundle();
         mBundle.putString("buttonId", buttonId);
+        mBundle.putBoolean("fromScan", fromScan);  // scanId is null unless opened via button scan
         fragment.setArguments(mBundle);
 
         final FragmentManager fragmentManager = this.getSupportFragmentManager();
@@ -284,11 +285,15 @@ public class MainActivity extends FragmentActivity implements
         query.getInBackground(buttonId, new GetCallback<io.button.models.Button>() {
             public void done(io.button.models.Button button, ParseException e) {
                 if (e == null) {
-                    button.wasScanned();
-                    button.saveInBackground();
 
+                    //Create a new scan interaction between this button and the current user
+                    Scan buttonScan = new Scan(button, ParseUser.getCurrentUser());
+                    //buttonScan.setLocation();
+                    buttonScan.saveInBackground();
+
+                    //Check button ownership and forward to the correct fragment
                     if(button.hasOwner()) {
-                        onButtonProfileSelected(button.getObjectId(), false);
+                        onButtonProfileSelected(button.getObjectId(), false, true);
                     } else {
                         openButtonClaimFragment(button.getObjectId());
                     }

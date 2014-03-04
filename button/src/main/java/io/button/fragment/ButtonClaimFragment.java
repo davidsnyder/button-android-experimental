@@ -57,7 +57,7 @@ public class ButtonClaimFragment extends Fragment {
                             button.setOwner(ParseUser.getCurrentUser());
                             button.saveInBackground();
 
-                            mCallback.onButtonProfileSelected(buttonId, false);
+                            mCallback.onButtonProfileSelected(buttonId, false, true);
                         }
                     }
                 });

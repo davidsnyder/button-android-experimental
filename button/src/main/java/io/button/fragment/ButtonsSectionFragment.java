@@ -38,7 +38,7 @@ public class ButtonsSectionFragment extends ListFragment {
     OnButtonSelectedListener mCallback;
 
     public interface OnButtonSelectedListener {
-        public void onButtonProfileSelected(String buttonId, boolean addToBackStack);
+        public void onButtonProfileSelected(String buttonId, boolean addToBackStack, boolean fromScan);
     }
 
     @Override
@@ -89,6 +89,6 @@ public class ButtonsSectionFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         String buttonId = ((TextView) v.findViewById(R.id.button_id)).getText().toString();
-        mCallback.onButtonProfileSelected(buttonId, true);
+        mCallback.onButtonProfileSelected(buttonId, true, false);
     }
 }
