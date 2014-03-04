@@ -11,7 +11,6 @@ import com.parse.ParseUser;
 public class Post extends ParseObject {
 
     public Post() {
-        // A default constructor is required.
     }
 
     public String getPostBody() {
@@ -22,16 +21,8 @@ public class Post extends ParseObject {
         put("postBody", postBody);
     }
 
-    public ParseUser getOwner() {
-        return null;
-    }
-
-    public void setOwner(ParseUser user) {
-        //    put getParseObject("buttonClaim").getParseUser("user", user);
-    }
-
     public ParseUser getCreator() {
-        return null;
+        return getParseUser("user");
     }
 
     public void setCreator(ParseUser user) {
@@ -47,7 +38,7 @@ public class Post extends ParseObject {
     }
 
     public void setButton(io.button.models.Button button) {
-
+        put("button", button);
     }
 
     public void setButton(String buttonId) {
@@ -56,7 +47,7 @@ public class Post extends ParseObject {
     }
 
     public io.button.models.Button getButton() {
-        return null;
+        return (io.button.models.Button) getParseObject("button");
     }
 
 }
