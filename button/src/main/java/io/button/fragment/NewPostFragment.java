@@ -33,9 +33,15 @@ import java.io.File;
 import java.io.IOException;
 import io.button.models.Post;
 
+import java.io.ByteArrayOutputStream;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
 import com.parse.*;
 
 public class NewPostFragment extends Fragment {
+
+    private static final int SCALED_IMAGE_DIM = 700;
 
     private Button submitButton;
     private String buttonId;
@@ -77,7 +83,9 @@ public class NewPostFragment extends Fragment {
             File file = new File(imageUri.getPath());
             byte[] imageData = org.apache.commons.io.FileUtils.readFileToByteArray(file);
 
-            photoFile = new ParseFile(imageUri.getLastPathSegment(), imageData);
+            byte[] scaledImage = scalePhoto(imageData);
+
+            photoFile = new ParseFile(imageUri.getLastPathSegment(), scaledImage);
             photoFile.saveInBackground(new SaveCallback() {
 
                 public void done(ParseException e) {
@@ -86,6 +94,8 @@ public class NewPostFragment extends Fragment {
                     } else {
                         post = new Post();
                         post.setPhotoFile(photoFile);
+                        post.setButton(buttonId);
+                        post.setCreator(ParseUser.getCurrentUser());
                         post.saveInBackground(new SaveCallback() {
 
                             @Override
@@ -105,6 +115,16 @@ public class NewPostFragment extends Fragment {
 
         }
 
+    }
+    
+    private byte[] scalePhoto(byte[] imageData) {
+        Bitmap postImage = BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
+        Bitmap postImageScaled = Bitmap.createScaledBitmap(postImage, SCALED_IMAGE_DIM, SCALED_IMAGE_DIM
+                * postImage.getHeight() / postImage.getWidth(), false);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        postImageScaled.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+
+        return bos.toByteArray();
     }
 
 }

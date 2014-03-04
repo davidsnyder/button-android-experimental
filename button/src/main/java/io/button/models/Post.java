@@ -35,7 +35,7 @@ public class Post extends ParseObject {
     }
 
     public void setCreator(ParseUser user) {
-
+        put("user", user);
     }
 
     public ParseFile getPhotoFile() {
@@ -48,6 +48,11 @@ public class Post extends ParseObject {
 
     public void setButton(io.button.models.Button button) {
 
+    }
+
+    public void setButton(String buttonId) {
+        ParseObject button = ParseObject.createWithoutData("Button", buttonId);
+        put("button", button);
     }
 
     public io.button.models.Button getButton() {

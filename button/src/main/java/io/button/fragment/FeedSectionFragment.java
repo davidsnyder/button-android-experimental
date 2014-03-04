@@ -14,22 +14,74 @@
 
 package io.button.fragment;
 
+import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
-import io.button.R;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.TextView;
-import android.support.v4.app.Fragment;
+import com.parse.ParseQueryAdapter;
+import com.parse.ParseQuery;
+import io.button.adapter.PostAdapter;
+import io.button.R;
+import io.button.models.*;
+import android.util.Log;
 
-public class FeedSectionFragment extends Fragment {
+public class FeedSectionFragment extends ListFragment {
+
+    private PostAdapter postAdapter;
+
+    //OnButtonSelectedListener mCallback;
+//
+//    public interface OnButtonSelectedListener {
+//        public void onButtonProfileSelected(String buttonId, boolean addToBackStack);
+//    }
+
+//    @Override
+//    public void onAttach(Activity activity) {
+//        super.onAttach(activity);
+//
+//        // This makes sure that the container activity has implemented
+//        // the callback interface. If not, it throws an exception
+//        try {
+//            mCallback = (OnButtonSelectedListener) activity;
+//        } catch (ClassCastException e) {
+//            throw new ClassCastException(activity.toString()
+//                    + " must implement OnButtonSelectedListener");
+//        }
+//    }
 
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+
         View rootView = inflater.inflate(
                 R.layout.fragment_feed, container, false);
-        ((TextView) rootView.findViewById(R.id.text1)).setText("Feed");
+
         return rootView;
     }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        ParseQueryAdapter.QueryFactory<Post> postQueryFactory = new ParseQueryAdapter.QueryFactory<Post>() {
+            public ParseQuery<Post> create() {
+                ParseQuery query = new ParseQuery("Post");
+                // TODO: query.where(this button is followed by me);
+                return query;
+            }
+        };
+        postAdapter = new PostAdapter(this.getActivity(), postQueryFactory);
+
+        setListAdapter(postAdapter);
+    }
+
+//    @Override
+//    public void onListItemClick(ListView l, View v, int position, long id) {
+//        String buttonId = ((TextView) v.findViewById(android.R.id.text1)).getText().toString();
+//        mCallback.onButtonProfileSelected(buttonId, true);
+//    }
 }

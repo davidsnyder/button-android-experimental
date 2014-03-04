@@ -8,18 +8,30 @@
               android:background="@color/white"
               android:clickable="true">
 
-    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-              android:id="@+id/buttonId"
+    <ListView android:id="@id/android:list"
               android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:gravity="center"
-              android:textSize="75sp"
-              android:padding="32dp" />
+              android:layout_height="fill_parent"
+              android:layout_weight="1"
+              android:drawSelectorOnTop="false"/>
 
-    <Button
-            android:id="@+id/button_goto_camera"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:text="New Post"/>
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="match_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1">
+
+        <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:id="@+id/buttonId"
+                  android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:gravity="center"
+                  android:textSize="75sp"
+                  android:padding="32dp" />
+
+        <Button
+                android:id="@+id/button_goto_camera"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:text="New Post"/>
+    </RelativeLayout>
 </FrameLayout>

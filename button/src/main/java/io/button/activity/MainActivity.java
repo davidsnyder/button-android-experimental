@@ -97,7 +97,7 @@ public class MainActivity extends FragmentActivity implements
         Injector.inject(this, getApplicationContext());
         ButterKnife.inject(this);
 
-        getActionBar().hide();
+        //getActionBar().hide();
 
         //If the app launches via a button scan the intent will be caught here
         Intent intent = getIntent();

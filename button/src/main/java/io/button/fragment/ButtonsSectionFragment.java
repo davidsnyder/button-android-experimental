@@ -14,24 +14,26 @@
 
 package io.button.fragment;
 
-import io.button.R;
-
+import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.app.Activity;
-import android.widget.TextView;
 import android.widget.ListView;
-import android.widget.ArrayAdapter;
-import android.support.v4.app.ListFragment;
-
-import java.lang.CharSequence;
-import java.lang.Override;
+import android.widget.TextView;
+import com.parse.ParseQueryAdapter;
+import com.parse.ParseQuery;
+import io.button.R;
+import io.button.models.Button;
+import io.button.adapter.ButtonAdapter;
+import android.util.Log;
 
 public class ButtonsSectionFragment extends ListFragment {
 
     final static CharSequence EMPTY_BUTTON_LIST_TEXT = "When you scan buttons they will show up here";
+
+    private ButtonAdapter buttonAdapter;
 
     OnButtonSelectedListener mCallback;
 
@@ -67,10 +69,16 @@ public class ButtonsSectionFragment extends ListFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        String[] values = new String[] {"1","2","3","4","5"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_list_item_1, android.R.id.text1, values);   //TODO: Replace with R.layout.button_list_row
-        setListAdapter(adapter);
+        ParseQueryAdapter.QueryFactory<Button> buttonQueryFactory = new ParseQueryAdapter.QueryFactory<Button>() {
+            public ParseQuery<Button> create() {
+                ParseQuery query = new ParseQuery("Button");
+                // TODO: query.where(I own or have scanned this button);
+                return query;
+            }
+        };
+        buttonAdapter = new ButtonAdapter(this.getActivity(), buttonQueryFactory);
+
+        setListAdapter(buttonAdapter);
 
         //Some bug prevents this from working
         //https://code.google.com/p/android/issues/detail?id=21742
@@ -80,7 +88,7 @@ public class ButtonsSectionFragment extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        String buttonId = ((TextView) v.findViewById(android.R.id.text1)).getText().toString();
+        String buttonId = ((TextView) v.findViewById(R.id.button_id)).getText().toString();
         mCallback.onButtonProfileSelected(buttonId, true);
     }
 }
