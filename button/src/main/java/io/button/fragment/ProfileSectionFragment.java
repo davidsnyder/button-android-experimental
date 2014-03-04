@@ -26,6 +26,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import com.parse.ParseQueryAdapter;
 import com.parse.ParseQuery;
+import com.parse.ParseObject;
 import io.button.R;
 import io.button.adapter.PostAdapter;
 import io.button.models.Post;
@@ -65,7 +66,8 @@ public class ProfileSectionFragment extends Fragment {
         ParseQueryAdapter.QueryFactory<Post> postQueryFactory = new ParseQueryAdapter.QueryFactory<Post>() {
             public ParseQuery<Post> create() {
                 ParseQuery query = new ParseQuery("Post");
-                // TODO: query.where("button" == buttonId);
+                ParseObject button = ParseObject.createWithoutData("Button", buttonId);
+                query.whereEqualTo("button", button);
                 return query;
             }
         };
