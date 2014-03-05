@@ -56,14 +56,14 @@ public class ProfileSectionFragment extends Fragment {
         ((TextView) rootView.findViewById(R.id.buttonId)).setText(buttonId);
 
         fromScan = getArguments().getBoolean("fromScan");
-        if (fromScan) {
+       // if (fromScan) {
             photoButton = (Button) rootView.findViewById(R.id.button_goto_camera);
             photoButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     mCallback.onNewPostSelected(buttonId);
                 }
             });
-        }
+       // }
 
         ListView buttonPostList = ((ListView) rootView.findViewById(android.R.id.list));
 

@@ -14,6 +14,8 @@ import com.parse.ParseImageView;
 import com.parse.ParseQuery;
 import com.parse.ParseQueryAdapter;
 
+import android.util.Log;
+
 import io.button.models.*;
 import io.button.R;
 
@@ -44,10 +46,15 @@ public class PostAdapter extends ParseQueryAdapter<Post> {
             });
         }
 
-        TextView idTextView = (TextView) v.findViewById(R.id.post_id);
-        idTextView.setText(post.getObjectId());
-//        TextView titleTextView = (TextView) v.findViewById(R.id.text1);
-//        titleTextView.setText(post.getTitle());
+        TextView idTextView = (TextView) v.findViewById(R.id.button_name);
+        idTextView.setText(post.getButton().getName());
+
+        TextView creatorTextView = (TextView) v.findViewById(R.id.creator_id);
+        creatorTextView.setText(post.getCreator().getUsername());
+
+        TextView postBodyTextView = (TextView) v.findViewById(R.id.post_body);
+        postBodyTextView.setText(post.getPostBody());
+
 //        TextView ratingTextView = (TextView) v
 //                .findViewById(R.id.favorite_meal_rating);
 //        ratingTextView.setText(post.getRating());

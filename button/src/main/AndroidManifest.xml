@@ -48,6 +48,22 @@
             </intent-filter>
         </activity>
 
+        <!-- ButtonProfile Activity -->
+        <!--<activity-->
+                <!--android:name=".activity.ButtonProfileActivity"-->
+                <!--android:launchMode="singleTop">-->
+
+            <!--<intent-filter>-->
+                <!--<action android:name="android.nfc.action.NDEF_DISCOVERED"/>-->
+                <!--<category android:name="android.intent.category.DEFAULT"/>-->
+                <!--<data-->
+                        <!--android:scheme="vnd.android.nfc"-->
+                        <!--android:host="ext"-->
+                        <!--android:pathPrefix="/io.button:button"/>-->
+            <!--</intent-filter>-->
+        <!--</activity>-->
+
+
         <!-- Sign Up or Login Activity -->
         <!--<activity-->
                 <!--android:name=".activity.SignUpOrLoginActivity">-->

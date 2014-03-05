@@ -70,6 +70,8 @@ public class FeedSectionFragment extends ListFragment {
         ParseQueryAdapter.QueryFactory<Post> postQueryFactory = new ParseQueryAdapter.QueryFactory<Post>() {
             public ParseQuery<Post> create() {
                 ParseQuery query = new ParseQuery("Post");
+                query.include("user");
+                query.include("button");
                 // TODO: query.where(this button is followed by me);
                 return query;
             }
