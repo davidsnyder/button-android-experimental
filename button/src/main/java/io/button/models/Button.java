@@ -10,7 +10,6 @@ import android.util.Log;
 public class Button extends ParseObject {
 
     public Button() {
-        // A default constructor is required.
     }
 
     public String getName() {
@@ -34,20 +33,11 @@ public class Button extends ParseObject {
     }
 
     public ParseUser getOwner() {
-        ParseObject buttonClaim = getParseObject("buttonClaim");
-        if (buttonClaim != null) {
-            return buttonClaim.getParseUser("user");
-        } else {
-            return null;
-        }
+        return getParseUser("owner");
     }
 
     public void setOwner(ParseUser user) {
-        if (!this.hasOwner()) {
-            ParseObject buttonClaim = new ParseObject("ButtonClaim");
-            buttonClaim.put("user", user);
-            this.put("buttonClaim", buttonClaim);
-        }
+        put("owner", user);
     }
 
     public int getColor() {

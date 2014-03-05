@@ -281,7 +281,7 @@ public class MainActivity extends FragmentActivity implements
 
         String buttonId = getButtonId(intent);
         ParseQuery<io.button.models.Button> query = ParseQuery.getQuery(io.button.models.Button.class);
-        query.include("buttonClaim.user");
+        query.include("owner");
         query.getInBackground(buttonId, new GetCallback<io.button.models.Button>() {
             public void done(io.button.models.Button button, ParseException e) {
                 if (e == null) {
