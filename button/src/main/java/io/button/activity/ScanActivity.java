@@ -64,6 +64,7 @@ public class ScanActivity extends Activity {
                     if (button.hasOwner()) {
                         intent = new Intent(activity, ButtonProfileActivity.class);
                         intent.putExtra("buttonLinkId", buttonLink.getObjectId());
+                        intent.putExtra("fromScan", true);
                     } else {
                         intent = new Intent(activity, ButtonClaimActivity.class);
                         intent.putExtra("buttonId", button.getObjectId());

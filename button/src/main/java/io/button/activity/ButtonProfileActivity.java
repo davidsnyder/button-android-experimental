@@ -50,14 +50,15 @@ public class ButtonProfileActivity extends Activity {
 //        pendingIntent = PendingIntent.getActivity(this, 0,
 //                new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 
-        String buttonLinkId = getIntent().getStringExtra("buttonLinkId");
+        final String buttonLinkId = getIntent().getStringExtra("buttonLinkId");
+        final Boolean fromScan = getIntent().getBooleanExtra("fromScan", false);
 
         ParseQuery<ButtonLink> query = ParseQuery.getQuery("ButtonLink");
         query.include("button.owner");
         query.getInBackground(buttonLinkId, new GetCallback<ButtonLink>() {
             public void done(ButtonLink buttonLink, ParseException e) {
                 if (e == null) {
-                    renderButtonProfile(buttonLink.getButton(), buttonLink);
+                    renderButtonProfile(buttonLink.getButton(), buttonLink, fromScan);
                 } else {
                     // something went wrong
                 }
@@ -66,7 +67,7 @@ public class ButtonProfileActivity extends Activity {
 
     }
 
-    public void renderButtonProfile(final io.button.models.Button button, final ButtonLink buttonLink) {
+    public void renderButtonProfile(final io.button.models.Button button, final ButtonLink buttonLink, boolean fromScan) {
 
         String buttonName;
         if (button.getName() == null) {
@@ -76,14 +77,16 @@ public class ButtonProfileActivity extends Activity {
         }
         ((TextView) findViewById(R.id.buttonId)).setText(buttonName);
 
-        // if (fromScan) {
-        Button photoButton = (Button) findViewById(R.id.button_goto_camera);
-        photoButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                launchNewPostActivity(buttonLink.getButton());
-            }
-        });
-        // }
+        if (fromScan) {
+            photoButton.setVisibility(View.VISIBLE);
+            Button photoButton = (Button) findViewById(R.id.button_goto_camera);
+
+            photoButton.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    launchNewPostActivity(button);
+                }
+            });
+        }
 
         ListView buttonPostList = ((ListView) findViewById(android.R.id.list));
 
