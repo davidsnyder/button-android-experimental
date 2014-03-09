@@ -16,57 +16,31 @@
 
 package io.button.activity;
 
-import io.button.models.*;
-
-import io.button.R;
-import io.button.fragment.ButtonsSectionFragment;
-import io.button.fragment.ButtonClaimFragment;
-import io.button.fragment.NewPostFragment;
-import io.button.fragment.ProfileSectionFragment;
-import io.button.fragment.FeedSectionFragment;
-import io.button.util.MediaUtils;
-
-import android.net.Uri;
-import android.provider.MediaStore;
-import android.util.Log;
-
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.Context;
-
-import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
-
-import android.app.ActionBar;
-import android.app.PendingIntent;
-import android.app.Activity;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.ImageButton;
-
-import com.parse.*;
+import android.util.Log;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import com.parse.*;
+import io.button.R;
+import io.button.activity.ButtonProfileActivity;
+import io.button.dagger.Injector;
+import io.button.dagger.annotation.Button;
+import io.button.fragment.ButtonsSectionFragment;
+import io.button.fragment.FeedSectionFragment;
+import io.button.models.*;
+
 import javax.inject.Inject;
 import javax.inject.Provider;
-import io.button.dagger.annotation.Button;
-import io.button.dagger.Injector;
-import java.lang.Override;
 
 public class MainActivity extends FragmentActivity implements
-        ButtonsSectionFragment.OnButtonSelectedListener,
-        ProfileSectionFragment.NewPostListener {
+        ButtonsSectionFragment.OnButtonSelectedListener {
 
     @Inject
     Provider<ParseUser> currentUser;
@@ -77,6 +51,7 @@ public class MainActivity extends FragmentActivity implements
     @Inject
     @Button
     IntentFilter buttonNdefIntentFilter;
+
     AppSectionsPagerAdapter collectionPagerAdapter;
     ViewPager mViewPager;
 
@@ -84,26 +59,27 @@ public class MainActivity extends FragmentActivity implements
     private static final int NUM_PAGER_SECTIONS = sections.length;
     private static final int NUM_DEFAULT_PAGE = 1;
 
-    private Uri fileUri;
-    // FIXME: The intent passed to onActivityResult is null so there's no way to pass this information back to the activity from the camera
-    private String _buttonId;
-
-    private PendingIntent pendingIntent;
+    //private PendingIntent pendingIntent;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Log.d("MainActivity", "onCreate");
+        if(getIntent().getAction() != null) {
+        Log.d("MainActivity", getIntent().getAction());
+        }
+
         Injector.inject(this, getApplicationContext());
         ButterKnife.inject(this);
 
-        //getActionBar().hide();
+        getActionBar().hide();
 
         //If the app launches via a button scan the intent will be caught here
-        Intent intent = getIntent();
-        if (buttonScanned(intent)) {
-            handleButtonScan(intent);
-        }
+//        Intent intent = getIntent();
+//        if (buttonScanned(intent)) {
+//            handleButtonScan(intent);
+//        }
 
         // Set up SwipePager
         final FragmentManager fragmentManager = this.getSupportFragmentManager();
@@ -131,8 +107,8 @@ public class MainActivity extends FragmentActivity implements
         // Create a pending intent to capture any future NFC scans that
         // take place while the app is already in the foreground.
         // A scan intent will call MainActivity.onNewIntent()
-        pendingIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+//        pendingIntent = PendingIntent.getActivity(this, 0,
+//                new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
     }
 
     /**
@@ -171,99 +147,43 @@ public class MainActivity extends FragmentActivity implements
     }
 
     /**
-     * Event callback for ProfileSectionFragment.onNewPostSelected
-     */
-    public void onNewPostSelected(String buttonId) {
-
-        // create Intent to take a picture and return control to the calling application
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-        fileUri = MediaUtils.getOutputMediaFileUri(MediaUtils.MEDIA_TYPE_IMAGE); // create a file to save the image
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
-        _buttonId = buttonId;
-        // start the image capture Intent
-        startActivityForResult(intent, MediaUtils.CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
-    }
-
-    /**
      * Event callback for ButtonsSectionFragment.OnButtonSelectedListener
      */
-    public void onButtonProfileSelected(String buttonId, boolean addToBackStack, boolean fromScan) {
-        ProfileSectionFragment fragment = new ProfileSectionFragment();
-
-        Bundle mBundle = new Bundle();
-        mBundle.putString("buttonId", buttonId);
-        mBundle.putBoolean("fromScan", fromScan);  // scanId is null unless opened via button scan
-        fragment.setArguments(mBundle);
-
-        final FragmentManager fragmentManager = this.getSupportFragmentManager();
-
-        if(fragmentManager.findFragmentByTag(buttonId) != null) {
-            //the profile fragment corresponding to this buttonId is already on the fragment stack; bring to front
-            fragmentManager.popBackStack(buttonId, 0);
-        } else {
-            final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.add(R.id.container, fragment, buttonId);
-            if (addToBackStack) {
-                fragmentTransaction.addToBackStack(buttonId);
-            }
-            fragmentTransaction.commit();
-        }
+    public void onButtonProfileSelected(String buttonLinkId) {
+        Intent intent = new Intent(this, ButtonProfileActivity.class);
+        intent.putExtra("buttonLinkId", buttonLinkId);
+        startActivity(intent);
     }
 
     /**
      *  Intents that arrive while the app is already opened will come through here
      *  If the app is not opened, the intent will proceed through MainActivity.onCreate
      */
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-
-        ParseUser user = currentUser.get();
-        if (user != null) {
-            if (buttonScanned(intent)) {
-                handleButtonScan(intent);
-            }
-        }
-    }
+//    @Override
+//    protected void onNewIntent(Intent intent) {
+//        super.onNewIntent(intent);
+//
+//        ParseUser user = currentUser.get();
+//        if (user != null) {
+//            if (buttonScanned(intent)) {
+//                handleButtonScan(intent);
+//            }
+//        }
+//    }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        // Ensure that we intercept any additional button scans
-        enableForegroundDispatch();
+      // Ensure that we intercept any additional button scans
+      //  enableForegroundDispatch();
 
-        Intent intent = getIntent();
-        // We check our user
-        ParseUser user = currentUser.get();
-        if (user == null) {
-         //   startActivity(new Intent(this, SignUpOrLoginActivity.class));
-        } else {
-            // Check to see if this is a button scan
-            if (buttonScanned(intent)) {
-               // buttonClaim(getButtonId(intent));
-            }
-        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        disableForegroundDispatch();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == MediaUtils.CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                openNewPostFragment(_buttonId, fileUri);
-            } else if (resultCode == RESULT_CANCELED) {
-                // User cancelled the image capture
-            } else {
-                // Image capture failed, advise user
-            }
-        }
+        //disableForegroundDispatch();
     }
 
     /**
@@ -272,37 +192,14 @@ public class MainActivity extends FragmentActivity implements
      * @param intent
      * @return true if intent was from a button scan false if not
      */
-    private boolean buttonScanned(Intent intent) {
-        // TODO add more stringent check for this intent
-        return NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction());
-    }
-
-    private void handleButtonScan(Intent intent) {
-
-        String buttonId = getButtonId(intent);
-        ParseQuery<io.button.models.Button> query = ParseQuery.getQuery(io.button.models.Button.class);
-        query.include("owner");
-        query.getInBackground(buttonId, new GetCallback<io.button.models.Button>() {
-            public void done(io.button.models.Button button, ParseException e) {
-                if (e == null) {
-
-                    //Create a new scan interaction between this button and the current user
-                    Scan buttonScan = new Scan(button, ParseUser.getCurrentUser());
-                    //buttonScan.setLocation();
-                    buttonScan.saveInBackground();
-
-                    //Check button ownership and forward to the correct fragment
-                    if(button.hasOwner()) {
-                        onButtonProfileSelected(button.getObjectId(), false, true);
-                    } else {
-                        openButtonClaimFragment(button.getObjectId());
-                    }
-
-                }
-            }
-        });
-
-    }
+//    private boolean buttonScanned(Intent intent) {
+//        // TODO add more stringent check for this intent
+//        return NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction());
+//    }
+//
+//    private void handleButtonScan(Intent intent) {
+//        //HANDLE BUTTON SCAN
+//    }
 
     /**
      * Retrieves a button id from an intent.
@@ -310,71 +207,36 @@ public class MainActivity extends FragmentActivity implements
      * @param intent
      * @return
      */
-    private String getButtonId(Intent intent) {
-        Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-        String buttonId = "";
-        if (rawMsgs != null) {
-            NdefMessage msgs[] = new NdefMessage[rawMsgs.length];
-            for (int i = 0; i < rawMsgs.length; i++) {
-                msgs[i] = (NdefMessage) rawMsgs[i];
-            }
-            // Get the button id
-            buttonId = new String(msgs[0].getRecords()[0].getPayload());
-        }
-        return buttonId;
-    }
+//    private String getButtonId(Intent intent) {
+//        Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+//        String buttonId = "";
+//        if (rawMsgs != null) {
+//            NdefMessage msgs[] = new NdefMessage[rawMsgs.length];
+//            for (int i = 0; i < rawMsgs.length; i++) {
+//                msgs[i] = (NdefMessage) rawMsgs[i];
+//            }
+//            // Get the button id
+//            buttonId = new String(msgs[0].getRecords()[0].getPayload());
+//        }
+//        return buttonId;
+//    }
 
-    /**
-     * Utility method to enable foreground dispatch
-     */
-    private void enableForegroundDispatch() {
-        if (nfcAdapter != null && nfcAdapter.isEnabled()) {
-            nfcAdapter.enableForegroundDispatch(this, pendingIntent, new IntentFilter[] {buttonNdefIntentFilter}, null);
-        }
-    }
-
-    /**
-     * Utility method to disable foreground dispatch
-     */
-    private void disableForegroundDispatch() {
-        if (nfcAdapter != null && nfcAdapter.isEnabled()) {
-            nfcAdapter.disableForegroundDispatch(this);
-        }
-    }
-
-    private void openNewPostFragment(String buttonId, Uri fileUri) {
-        NewPostFragment fragment = new NewPostFragment();
-
-        Bundle mBundle = new Bundle();
-        mBundle.putString("buttonId", buttonId);
-        mBundle.putString("fileUri", fileUri.toString());
-        fragment.setArguments(mBundle);
-
-        final FragmentManager fragmentManager = this.getSupportFragmentManager();
-
-        final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add(R.id.container, fragment, "newPost");
-        fragmentTransaction.addToBackStack("newPost");
-        fragmentTransaction.commitAllowingStateLoss();
-    }
-
-    private void openButtonClaimFragment(String buttonId) {
-        ButtonClaimFragment fragment = new ButtonClaimFragment();
-
-        Bundle mBundle = new Bundle();
-        mBundle.putString("buttonId", buttonId);
-        fragment.setArguments(mBundle);
-        String fragmentTag = "buttonClaim_" + buttonId;
-        final FragmentManager fragmentManager = this.getSupportFragmentManager();
-        if(fragmentManager.findFragmentByTag(fragmentTag) != null) {
-            //the profile fragment corresponding to this buttonId is already on the fragment stack; bring to front
-            fragmentManager.popBackStack(fragmentTag, 0);
-        } else {
-            final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.add(R.id.container, fragment, fragmentTag);
-            fragmentTransaction.addToBackStack(fragmentTag);
-            fragmentTransaction.commitAllowingStateLoss();
-        }
-    }
+//    /**
+//     * Utility method to enable foreground dispatch
+//     */
+//    private void enableForegroundDispatch() {
+//        if (nfcAdapter != null && nfcAdapter.isEnabled()) {
+//            nfcAdapter.enableForegroundDispatch(this, pendingIntent, new IntentFilter[] {buttonNdefIntentFilter}, null);
+//        }
+//    }
+//
+//    /**
+//     * Utility method to disable foreground dispatch
+//     */
+//    private void disableForegroundDispatch() {
+//        if (nfcAdapter != null && nfcAdapter.isEnabled()) {
+//            nfcAdapter.disableForegroundDispatch(this);
+//        }
+//    }
 
 }

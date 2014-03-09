@@ -14,20 +14,16 @@
 
 package io.button.fragment;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
-import android.widget.TextView;
-import com.parse.ParseQueryAdapter;
 import com.parse.ParseQuery;
-import io.button.adapter.PostAdapter;
+import com.parse.ParseQueryAdapter;
 import io.button.R;
+import io.button.adapter.PostAdapter;
 import io.button.models.*;
-import android.util.Log;
 
 public class FeedSectionFragment extends ListFragment {
 

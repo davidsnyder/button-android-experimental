@@ -1,19 +1,17 @@
 package io.button;
 
 import android.app.Application;
-
 import com.parse.Parse;
-import com.parse.ParseObject;
 import com.parse.ParseACL;
-import io.button.models.*;
-
-import java.util.Arrays;
-import java.util.List;
-
+import com.parse.ParseObject;
 import dagger.ObjectGraph;
 import io.button.dagger.AndroidModule;
 import io.button.dagger.ButtonModule;
 import io.button.dagger.InjectableApplication;
+import io.button.models.*;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class ButtonApplication extends Application implements InjectableApplication {
     private ObjectGraph objectGraph;
@@ -30,8 +28,9 @@ public class ButtonApplication extends Application implements InjectableApplicat
         // Register Parse subclasses
         ParseObject.registerSubclass(io.button.models.Button.class);
         ParseObject.registerSubclass(io.button.models.Post.class);
-        ParseObject.registerSubclass(io.button.models.Follow.class);
-        ParseObject.registerSubclass(io.button.models.Scan.class);
+//        ParseObject.registerSubclass(io.button.models.Follow.class);
+//        ParseObject.registerSubclass(io.button.models.Scan.class);
+        ParseObject.registerSubclass(io.button.models.ButtonLink.class);
 
         // FIXME: Restrict write/read access
         ParseACL defaultACL = new ParseACL();

@@ -22,23 +22,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
-import com.parse.ParseQueryAdapter;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
+import com.parse.ParseQueryAdapter;
 import io.button.R;
-import io.button.models.Button;
-import io.button.adapter.ButtonAdapter;
-import android.util.Log;
+import io.button.adapter.ButtonLinkAdapter;
+import io.button.models.*;
 
 public class ButtonsSectionFragment extends ListFragment {
 
     final static CharSequence EMPTY_BUTTON_LIST_TEXT = "When you scan buttons they will show up here";
 
-    private ButtonAdapter buttonAdapter;
+    private ButtonLinkAdapter buttonLinkAdapter;
 
     OnButtonSelectedListener mCallback;
 
     public interface OnButtonSelectedListener {
-        public void onButtonProfileSelected(String buttonId, boolean addToBackStack, boolean fromScan);
+        public void onButtonProfileSelected(String buttonLinkId);
     }
 
     @Override
@@ -69,16 +69,16 @@ public class ButtonsSectionFragment extends ListFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        ParseQueryAdapter.QueryFactory<Button> buttonQueryFactory = new ParseQueryAdapter.QueryFactory<Button>() {
-            public ParseQuery<Button> create() {
-                ParseQuery query = new ParseQuery("Button");
-                // TODO: query.where(I own or have scanned this button);
+        ParseQueryAdapter.QueryFactory<ButtonLink> buttonLinkQueryFactory = new ParseQueryAdapter.QueryFactory<ButtonLink>() {
+            public ParseQuery<ButtonLink> create() {
+                ParseQuery query = new ParseQuery("ButtonLink");
+                query.whereEqualTo("user", ParseUser.getCurrentUser());
                 return query;
             }
         };
-        buttonAdapter = new ButtonAdapter(this.getActivity(), buttonQueryFactory);
+        buttonLinkAdapter = new ButtonLinkAdapter(this.getActivity(), buttonLinkQueryFactory);
 
-        setListAdapter(buttonAdapter);
+        setListAdapter(buttonLinkAdapter);
 
         //Some bug prevents this from working
         //https://code.google.com/p/android/issues/detail?id=21742
@@ -88,7 +88,7 @@ public class ButtonsSectionFragment extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        String buttonId = ((TextView) v.findViewById(R.id.button_id)).getText().toString();
-        mCallback.onButtonProfileSelected(buttonId, true, false);
+        String buttonLinkId = (String)v.getTag();
+        mCallback.onButtonProfileSelected(buttonLinkId);
     }
 }

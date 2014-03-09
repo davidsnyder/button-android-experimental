@@ -1,11 +1,10 @@
 package io.button.models;
 
-import io.button.models.*;
-
 import com.parse.ParseClassName;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
+import io.button.models.*;
 
 @ParseClassName("Post")
 public class Post extends ParseObject {
